@@ -2,7 +2,7 @@ function GetNumberIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   if (max <= min || max < 0 || min < 0) {
-    throw new Error('Введите корректный диапазон');
+    throw new Error('Entre the correct value range');
   }
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -15,4 +15,4 @@ function checkCommentLength(comment, maxLength) {
   }
   return false;
 }
-checkCommentLength('Ваш комментарий проходит под ограничение', 140);
+checkCommentLength('Comment test', 140);
