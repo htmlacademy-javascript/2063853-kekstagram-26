@@ -1,4 +1,3 @@
-
 const DESCRIPTION = [
   'Сфоткал любимую,пока она спит',
   'Это я сегодня',
@@ -50,7 +49,6 @@ const MESSAGES = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
-
 function getRandomeNumber(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -83,9 +81,11 @@ function createNewPhoto(id) {
 
 function createAllPhotos() {
   const result = [];
-  for (let i=1; i<= 25; i++) {
+
+  for (let i = 1; i <= 25; i++) {
     result.push(createNewPhoto(i));
   }
+
   return result;
 }
 
