@@ -1,4 +1,4 @@
-const DESCRIPTION = [
+const DESCRIPTIONS = [
   'Сфоткал любимую,пока она спит',
   'Это я сегодня',
   'Это я вчера',
@@ -48,7 +48,13 @@ const MESSAGES = [
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
+const LIKE_MIN = 15;
+const LIKE_MAX = 200;
+const AVATAR_MIN = 1;
+const AVATAR_MAX = 6;
+const NUMBERS_OF_PHOTO = 25;
 
+//функция - генератор случайного числа в диапазоне от min до max (включительно)
 function getRandomeNumber(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -59,34 +65,34 @@ function getRandomeNumber(min, max) {
 
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
+//функция-генератор комментариев
 function getComment() {
   return {
     id: getRandomeNumber (1, 1000000),
-    avatar: `img/avatar-${getRandomeNumber(1, 6)}.svg`,
+    avatar: `img/avatar-${getRandomeNumber(AVATAR_MIN, AVATAR_MAX)}.svg`,
     message: MESSAGES[getRandomeNumber(0, MESSAGES.length)],
     name: NAMES[getRandomeNumber(0,NAMES.length)],
   };
 }
-
-function createNewPhoto(id) {
+//функция - генератор фотографий
+function getNewPhoto(id) {
   return {
     id: id,
-    url: `photos/${id}.jpg`, //решила, что логично привязать url фото к id//
-    description: DESCRIPTION[getRandomeNumber (0, DESCRIPTION.length -1)],
-    likes: getRandomeNumber(15,200),
+    url: `photos/${id}.jpg`, //привязать url фото к id//
+    description: DESCRIPTIONS[getRandomeNumber (0, DESCRIPTIONS.length -1)],
+    like: getRandomeNumber(LIKE_MIN,LIKE_MAX),
     comments: getComment(),
   };
 }
-
+//функция - создатель массива из нужного нам количества фото
 function createAllPhotos() {
-  const result = [];
+  const allPhotos = [];
 
-  for (let i = 1; i <= 25; i++) {
-    result.push(createNewPhoto(i));
+  for (let i = 1; i <= NUMBERS_OF_PHOTO; i++) {
+    allPhotos.push(getNewPhoto(i));
   }
 
-  return result;
+  return allPhotos;
 }
 
 createAllPhotos();
