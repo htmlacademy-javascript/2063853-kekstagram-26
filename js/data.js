@@ -1,4 +1,4 @@
-import { getRandomeNumber } from './util';
+import { getRandomeNumber } from './util.js';
 export {createAllPhotos};
 
 const DESCRIPTIONS = [
