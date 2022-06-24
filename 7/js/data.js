@@ -55,8 +55,8 @@ const LIKE_MIN = 15;
 const LIKE_MAX = 200;
 const AVATAR_MIN = 1;
 const AVATAR_MAX = 6;
-const NUMBERS_OF_PHOTO = 25;
-
+const NUMBER_OF_PHOTOS = 25;
+const NUMBER_OF_COMMENTS = 10;
 //функция-генератор комментариев
 function getComment() {
   const comment = {
@@ -65,12 +65,14 @@ function getComment() {
     message: MESSAGES[getRandomeNumber(0, MESSAGES.length)],
     name: NAMES[getRandomeNumber(0,NAMES.length)],
   };
-  const comments = [comment];
-  if (comment.id % 2) {
-    comments.push(comment);//создала возможность генерации либо 1 либо 2 комментов
+
+  const comments = [];
+
+  for (let i = 0; i <= NUMBER_OF_COMMENTS; i++) {
+    comments.push(comment);
   }
 
-  return comments;
+  return comments.slice(0, getRandomeNumber(0, NUMBER_OF_COMMENTS));
 }
 //функция - генератор фотографий
 function getNewPhoto(id) {
@@ -86,7 +88,7 @@ function getNewPhoto(id) {
 function createAllPhotos() {
   const allPhotos = [];
 
-  for (let i = 1; i <= NUMBERS_OF_PHOTO; i++) {
+  for (let i = 1; i <= NUMBER_OF_PHOTOS; i++) {
     allPhotos.push(getNewPhoto(i));
   }
 
