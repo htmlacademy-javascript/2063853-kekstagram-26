@@ -59,12 +59,18 @@ const NUMBERS_OF_PHOTO = 25;
 
 //функция-генератор комментариев
 function getComment() {
-  return {
+  const comment = {
     id: getRandomeNumber (1, 1000000),
     avatar: `img/avatar-${getRandomeNumber(AVATAR_MIN, AVATAR_MAX)}.svg`,
     message: MESSAGES[getRandomeNumber(0, MESSAGES.length)],
     name: NAMES[getRandomeNumber(0,NAMES.length)],
   };
+  const comments = [comment];
+  if (comment.id % 2) {
+    comments.push(comment);//создала возможность генерации либо 1 либо 2 комментов
+  }
+
+  return comments;
 }
 //функция - генератор фотографий
 function getNewPhoto(id) {
