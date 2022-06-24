@@ -1,0 +1,1 @@
+import './photo-create.js';
