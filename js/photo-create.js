@@ -1,17 +1,12 @@
-import {createAllPhotos} from './data.js';
+export {createUsersPhoto};
 
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
-const picturesList = document.querySelector ('.pictures');
-const pictureListFragment = document.createDocumentFragment();
-
-const usersPhotos = createAllPhotos();
-usersPhotos.forEach(({url, like, comments}) => {
+//функция - отрисовыватель фото по шаблону
+function createUsersPhoto ({url, like, comments}) {
   const photo = photoTemplate.cloneNode(true);
   photo.querySelector('.picture__img').setAttribute('src', url);
   photo.querySelector('.picture__comments').textContent = comments.length;
   photo.querySelector('.picture__likes').textContent = like;
+  return photo;
+}
 
-  pictureListFragment.appendChild(photo);
-});
-
-picturesList.appendChild(pictureListFragment);
