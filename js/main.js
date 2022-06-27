@@ -1,7 +1,6 @@
 import { createAllPhotos } from './data.js';
 import { createUsersPhoto } from './photo-create.js';
-import { openPhotoFull } from './photo-full.js';
-import { closePhotoFull } from './photo-full.js';
+import { openPhotoFull, closePhotoFull, photoFull } from './photo-full.js';
 
 const usersPhotos = createAllPhotos();
 const pictureListFragment = document.createDocumentFragment();
@@ -16,3 +15,5 @@ function addThumbnailClickHandler(photo) {
 usersPhotos.forEach(addThumbnailClickHandler);
 
 picturesList.appendChild(pictureListFragment);
+
+photoFull.querySelector('.big-picture__cancel').addEventListener('click', closePhotoFull);

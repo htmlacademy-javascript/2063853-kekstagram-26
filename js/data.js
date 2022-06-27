@@ -1,5 +1,4 @@
 import { getRandomeNumber } from './util.js';
-export {createAllPhotos};
 
 const DESCRIPTIONS = [
   'Сфоткал любимую,пока она спит',
@@ -56,23 +55,26 @@ const LIKE_MAX = 200;
 const AVATAR_MIN = 1;
 const AVATAR_MAX = 6;
 const NUMBER_OF_PHOTOS = 25;
-const NUMBER_OF_COMMENTS = 10;
-//функция-генератор комментариев
-function getComment() {
-  const comment = {
+const NUMBER_OF_COMMENTS = 7;
+
+function randomComment() {
+  return {
     id: getRandomeNumber (1, 1000000),
     avatar: `img/avatar-${getRandomeNumber(AVATAR_MIN, AVATAR_MAX)}.svg`,
-    message: MESSAGES[getRandomeNumber(0, MESSAGES.length)],
-    name: NAMES[getRandomeNumber(0,NAMES.length)],
+    message: MESSAGES[getRandomeNumber(0, MESSAGES.length - 1)],
+    name: NAMES[getRandomeNumber(0, NAMES.length - 1)],
   };
+}
 
+//функция-генератор комментариев
+function getComments() {
   const comments = [];
 
-  for (let i = 0; i <= NUMBER_OF_COMMENTS; i++) {
-    comments.push(comment);
+  for (let i = 0; i < NUMBER_OF_COMMENTS; i++) {
+    comments.push(randomComment());
   }
 
-  return comments.slice(0, getRandomeNumber(0, NUMBER_OF_COMMENTS));
+  return comments.slice(0, getRandomeNumber(0, NUMBER_OF_COMMENTS - 1));
 }
 //функция - генератор фотографий
 function getNewPhoto(id) {
@@ -81,7 +83,7 @@ function getNewPhoto(id) {
     url: `photos/${id}.jpg`, //привязать url фото к id//
     description: DESCRIPTIONS[getRandomeNumber (0, DESCRIPTIONS.length -1)],
     like: getRandomeNumber(LIKE_MIN,LIKE_MAX),
-    comments: getComment(),
+    comments: getComments(),
   };
 }
 //функция - создатель массива из нужного нам количества фото
@@ -94,3 +96,5 @@ function createAllPhotos() {
 
   return allPhotos;
 }
+
+export {createAllPhotos};
