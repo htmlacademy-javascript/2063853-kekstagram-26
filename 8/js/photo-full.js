@@ -1,24 +1,23 @@
-import { isEscapeKey, makeElement } from './util.js';
+import { isEscapeKey } from './util.js';
+
+const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
+const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
 
 // создание комментария
-function getUsersComment (comment) {
-  const usersComment = makeElement ('li', 'social_comment');
+function createUsersComment ({avatar, name, message}) {
+  const usersComment = commentTemplate.cloneNode(true);
+  const socialPicture = usersComment.querySelector('.social__picture');
+  socialPicture.src = avatar;
+  socialPicture.alt = name;
+  socialPicture.width = '35';
+  socialPicture.height = '35';
 
-  const userPic = makeElement ('img', 'social_picture');
-  userPic.src = comment.avatar;
-  userPic.alt = comment.name;
-  userPic.width = '35';
-  userPic.height = '35';
-  usersComment.appendChild(userPic);
-
-  const commentsText = makeElement ('p', 'social_text', comment.message);
-  usersComment.appendChild(commentsText);
+  usersComment.querySelector('.social__text').textContent = message;
 
   return usersComment;
 }
 //создание карточки большого фото
 function createPhotoFull ({url, like, comments, description}) {
-  const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
   const photoFull = fullPhotoTemplate.cloneNode(true);
 
   photoFull.querySelector('img').src = url;
@@ -27,11 +26,12 @@ function createPhotoFull ({url, like, comments, description}) {
   photoFull.querySelector('.social__caption').textContent = description;
   //рисуем комменты
   const commentsList = photoFull.querySelector('.social__comments');
+  commentsList.innerHTML = '';
   if (comments.length === 0) {
     commentsList.remove();//удаляем весь блок если нет комментариев
   }
   for (let i = 0; i < comments.length; i++) {
-    commentsList.appendChild(getUsersComment(comments[i]));
+    commentsList.appendChild(createUsersComment(comments[i]));
   }
   //добавляем обработчик на кнопку закрытия фото
   photoFull.querySelector('.big-picture__cancel').addEventListener('click', () => closePhotoFull(photoFull));
