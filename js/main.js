@@ -2,6 +2,7 @@ import { createAllPhotos } from './data.js';
 import { createUsersPhoto } from './photo-create.js';
 import { openPhotoFull} from './photo-full.js';
 import './photo-input.js';
+import './photo-edit.js';
 
 const usersPhotos = createAllPhotos();
 const pictureListFragment = document.createDocumentFragment();

@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller } from './photo-edit.js';
+import { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, addNone } from './photo-edit.js';
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
@@ -33,8 +33,9 @@ function openUploadField() {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
-  //установка масштаба фото по - умолчанию
+  //установка масштаба и стиля фото по - умолчанию
   initializeCurrentScaleValue();
+  addNone();
 
   //добавление обработчика на эскейп
   document.addEventListener('keydown', addKeydownEscHandler);
