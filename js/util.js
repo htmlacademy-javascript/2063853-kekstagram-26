@@ -15,6 +15,7 @@ getRandomeNumber ();
 function isEscapeKey(evt) {
   return evt.key === 'Escape';
 }
+
 // //кнопка клавиатуры enter
 // function isEnterKey(evt) {
 //   return evt.key === 'Enter';

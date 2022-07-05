@@ -1,4 +1,4 @@
-const scaleControl = document.querySelector('.scale__control--value');
+const scaleValue = document.querySelector('.scale__control--value');
 const imagePreview = document.querySelector('.img-upload__preview img');
 const SCALE_INCREMENT = 25;
 const SCALE_MAX = 100;
@@ -14,7 +14,7 @@ function initializeCurrentScaleValue() {
 function makePhotoBigger () {
   if (currentScaleValue < SCALE_MAX) {
     currentScaleValue += SCALE_INCREMENT;
-    scaleControl.value = `${currentScaleValue.toString()}%`;
+    scaleValue.value = `${currentScaleValue.toString()}%`;
 
     imagePreview.style.transform = `scale(${currentScaleValue * 0.01})`;
   }
@@ -23,81 +23,56 @@ function makePhotoBigger () {
 function makePhotoSmaller () {
   if (currentScaleValue > SCALE_MIN) {
     currentScaleValue -= SCALE_INCREMENT;
-    scaleControl.value = `${currentScaleValue.toString()}%`;
+    scaleValue.value = `${currentScaleValue.toString()}%`;
 
     imagePreview.style.transform = `scale(${currentScaleValue * 0.01})`;
   }
 }
 
-//слайдер
-const sliderElement = document.querySelector('.effect-level__slider');
-const effectLevel = document.querySelector('.effect-level__value');
+//эффекты
+const NONE_EFFECT = buildEffect('none', 0, 0, 0, '', '');
+const EFFECTS = [
+  NONE_EFFECT,
+  buildEffect('chrome', 0, 1, 0.1, 'grayscale', ''),
+  buildEffect('sepia', 0, 1, 0.1, 'sepia', ''),
+  buildEffect('phobos', 0, 3, 0.1, 'blur', 'px'),
+  buildEffect('marvin', 0, 100, 1, 'invert', '%'),
+  buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
+];
+let currentEffect = NONE_EFFECT;
 
-// const effectNoneButton = document.querySelector('#effect-none');
-// const effectChromeButton = document.querySelector('#effect-chrome');
-// const effectSepiaButton = document.querySelector('#effect-sepia');
-// const effectMarvinButton = document.querySelector('#effect-marvin');
-// const effectPhobosButton = document.querySelector('#effect-phobos');
-// const effectHeatButton = document.querySelector('#effect-heat');
-
-const effects = {
-  'none': 'effects__preview--none',
-  'chrome': 'effects__preview--chrome',
-  'sepia': 'effects__preview--sepia',
-  'phobos': 'effects__preview--phobos',
-  'marvin': 'effects__preview--marvin',
-  'heat': 'effects__preview--heat',
-};
-
-const effectButtonsList = document.querySelector('.effects__list');
-
-effectButtonsList.addEventListener('change', (event) => {
-  const targetEffectButton = event.target;
-
-  imagePreview.className = '';
-  imagePreview.classList.add(effects[targetEffectButton.value]);
-});
-
-function addNone() {
-  imagePreview.className = '';
-  imagePreview.classList.add('effects__preview--none');
+//функция - создатель объекта для эффекта
+function buildEffect(name, min, max, step, cssStyle, cssUnit) {
+  return {
+    name: name,
+    min: min,
+    max: max,
+    step: step,
+    cssStyle: cssStyle,
+    cssUnit: cssUnit
+  };
 }
 
-// function addChrome() {
-//   imagePreview.className = '';
-//   imagePreview.classList.add('effects__preview--chrome');
-// }
+//слайдер
+const sliderElement = document.querySelector('.effect-level__slider');
+const effectLevelValue = document.querySelector('.effect-level__value');
+const effectButtonsList = document.querySelector('.effects__list');
 
-// function addSepia() {
-//   imagePreview.className = '';
-//   imagePreview.classList.add('effects__preview--sepia');
-// }
+//применение эффекта при клике на кнопку эффекта
+effectButtonsList.addEventListener('change', (event) => {
+  const targetEffectButton = event.target;
+  for (let i = 0; i < EFFECTS.length; i ++) {
+    if (EFFECTS[i].name === targetEffectButton.value) {
+      currentEffect = EFFECTS[i];
+    }
+  }
+  updateSlider(currentEffect);
+  applyEffectToPhotoPreview(currentEffect);
+  effectLevelValue.value = currentEffect.max;
+  updatePhotoPreviewFilter(currentEffect.max);
+});
 
-// function addMarvin() {
-//   imagePreview.className = '';
-//   imagePreview.classList.add('effects__preview--marvin');
-
-// }
-
-// function addPhobos() {
-//   imagePreview.className = '';
-//   imagePreview.classList.add('effects__preview--phobos');
-// }
-
-// function addHeat() {
-//   imagePreview.className = '';
-//   imagePreview.classList.add('effects__preview--heat');
-// }
-
-// effectNoneButton.addEventListener('click', addNone);
-// effectChromeButton.addEventListener('click', addChrome);
-// effectSepiaButton.addEventListener('click', addSepia);
-// effectMarvinButton.addEventListener('click', addMarvin);
-// effectPhobosButton.addEventListener('click', addPhobos);
-// effectHeatButton.addEventListener('click', addHeat);
-
-effectLevel.value = 100;
-
+//создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
     min: 0,
@@ -108,21 +83,43 @@ noUiSlider.create(sliderElement, {
   connect: 'lower',
 });
 
+//запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
 sliderElement.noUiSlider.on('update', () => {
-  effectLevel.value = sliderElement.noUiSlider.get();
+  effectLevelValue.value = sliderElement.noUiSlider.get();
+  updatePhotoPreviewFilter(effectLevelValue.value);
 });
 
+//обновление слайдера в зависимости от выбранного эффекта
+function updateSlider(effect) {
+  if (effect.name === 'none') {
+    sliderElement.classList.add('hidden');
+  } else {
+    sliderElement.classList.remove('hidden');
+    sliderElement.noUiSlider.updateOptions({
+      range: {
+        min: effect.min,
+        max: effect.max
+      },
+      start: effect.max,
+      step: effect.step
+    });
+  }
+}
 
-export { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, addNone };
+//применение эффекта на фото
+function applyEffectToPhotoPreview(effect) {
+  imagePreview.className = '';
+  imagePreview.classList.add(`effects__preview--${effect.name}`);
+}
 
-//  Уровень эффекта записывается в поле .effect-level__value. При изменении уровня интенсивности эффекта,
-// CSS-стили картинки внутри .img-upload__preview обновляются следующим образом:
-// Для эффекта «Хром» — filter: grayscale(0..1) с шагом 0.1;
-// Для эффекта «Сепия» — filter: sepia(0..1) с шагом 0.1;
-// Для эффекта «Марвин» — filter: invert(0..100%) с шагом 1%;
-// Для эффекта «Фобос» — filter: blur(0..3px) с шагом 0.1px;
-// Для эффекта «Зной» — filter: brightness(1..3) с шагом 0.1;
-// Для эффекта «Оригинал» CSS-стили filter удаляются.
-// При выборе эффекта «Оригинал» слайдер скрывается.
-// При переключении эффектов, уровень насыщенности сбрасывается до начального значения (100%):
-//слайдер, CSS-стиль изображения и значение поля должны обновляться.
+//изменение насыщенности эффекта
+function updatePhotoPreviewFilter(effectValue) {
+  imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
+}
+
+function resetEffects() {
+  updateSlider(NONE_EFFECT);
+  applyEffectToPhotoPreview(NONE_EFFECT);
+}
+
+export { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, resetEffects };
