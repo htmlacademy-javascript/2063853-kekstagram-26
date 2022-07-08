@@ -65,9 +65,7 @@ effectButtonsList.addEventListener('change', (event) => {
   currentEffect = effect[targetEffectButton.value];
 
   updateSlider(currentEffect);
-  applyEffectToPhotoPreview(currentEffect);
-  effectLevelValue.value = currentEffect.max;
-  updatePhotoPreviewFilter(currentEffect.max);
+  applyEffectToPhotoPreview(currentEffect.max);
 });
 
 //создание слайдера
@@ -84,7 +82,7 @@ noUiSlider.create(sliderElement, {
 //запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
 sliderElement.noUiSlider.on('update', () => {
   effectLevelValue.value = sliderElement.noUiSlider.get();
-  updatePhotoPreviewFilter(effectLevelValue.value);
+  applyEffectToPhotoPreview(effectLevelValue.value);
 });
 
 //обновление слайдера в зависимости от выбранного эффекта
@@ -105,17 +103,19 @@ function updateSlider(filter) {
 }
 
 //применение эффекта на фото
-function applyEffectToPhotoPreview(filter) {
-  imagePreview.className = '';
-  imagePreview.classList.add(`effects__preview--${filter.name}`);
-  if (filter === EFFECT_NONE) {
-    imagePreview.style.filter = '';
-  }
-}
+function applyEffectToPhotoPreview(effectValue) {
+  const effectClassName = `effects__preview--${currentEffect.name}`;
 
-//изменение насыщенности эффекта
-function updatePhotoPreviewFilter(effectValue) {
-  imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
+  if (!imagePreview.classList.contains(effectClassName)) {
+    imagePreview.className = '';
+    imagePreview.classList.add(effectClassName);
+  }
+
+  if (currentEffect === EFFECT_NONE) {
+    imagePreview.style.filter = '';
+  } else {
+    imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
+  }
 }
 
 function resetEffects() {
