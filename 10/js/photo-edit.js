@@ -30,16 +30,16 @@ function makePhotoSmaller () {
 }
 
 //эффекты
-const NONE_EFFECT = buildEffect('none', 0, 0, 0, '', '');
-const EFFECTS = [
-  NONE_EFFECT,
-  buildEffect('chrome', 0, 1, 0.1, 'grayscale', ''),
-  buildEffect('sepia', 0, 1, 0.1, 'sepia', ''),
-  buildEffect('phobos', 0, 3, 0.1, 'blur', 'px'),
-  buildEffect('marvin', 0, 100, 1, 'invert', '%'),
-  buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
-];
-let currentEffect = NONE_EFFECT;
+const effect = {
+  none: buildEffect('none', 0, 0, 0, '', ''),
+  chrome: buildEffect('chrome', 0, 1, 0.1, 'grayscale', ''),
+  sepia: buildEffect('sepia', 0, 1, 0.1, 'sepia', ''),
+  phobos: buildEffect('phobos', 0, 3, 0.1, 'blur', 'px'),
+  marvin: buildEffect('marvin', 0, 100, 1, 'invert', '%'),
+  heat: buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
+};
+const EFFECT_NONE = effect.none;
+let currentEffect = effect.none;
 
 //функция - создатель объекта для эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
@@ -61,11 +61,9 @@ const effectButtonsList = document.querySelector('.effects__list');
 //применение эффекта при клике на кнопку эффекта
 effectButtonsList.addEventListener('change', (event) => {
   const targetEffectButton = event.target;
-  for (let i = 0; i < EFFECTS.length; i ++) {
-    if (EFFECTS[i].name === targetEffectButton.value) {
-      currentEffect = EFFECTS[i];
-    }
-  }
+
+  currentEffect = effect[targetEffectButton.value];
+
   updateSlider(currentEffect);
   applyEffectToPhotoPreview(currentEffect);
   effectLevelValue.value = currentEffect.max;
@@ -90,26 +88,29 @@ sliderElement.noUiSlider.on('update', () => {
 });
 
 //обновление слайдера в зависимости от выбранного эффекта
-function updateSlider(effect) {
-  if (effect.name === 'none') {
+function updateSlider(filter) {
+  if (filter.name === 'none') {
     sliderElement.classList.add('hidden');
   } else {
     sliderElement.classList.remove('hidden');
     sliderElement.noUiSlider.updateOptions({
       range: {
-        min: effect.min,
-        max: effect.max
+        min: filter.min,
+        max: filter.max
       },
-      start: effect.max,
-      step: effect.step
+      start: filter.max,
+      step: filter.step
     });
   }
 }
 
 //применение эффекта на фото
-function applyEffectToPhotoPreview(effect) {
+function applyEffectToPhotoPreview(filter) {
   imagePreview.className = '';
-  imagePreview.classList.add(`effects__preview--${effect.name}`);
+  imagePreview.classList.add(`effects__preview--${filter.name}`);
+  if (filter === EFFECT_NONE) {
+    imagePreview.style.filter = '';
+  }
 }
 
 //изменение насыщенности эффекта
@@ -118,8 +119,8 @@ function updatePhotoPreviewFilter(effectValue) {
 }
 
 function resetEffects() {
-  updateSlider(NONE_EFFECT);
-  applyEffectToPhotoPreview(NONE_EFFECT);
+  updateSlider(EFFECT_NONE);
+  applyEffectToPhotoPreview(EFFECT_NONE);
 }
 
 export { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, resetEffects };
