@@ -55,7 +55,7 @@ const LIKE_MAX = 200;
 const AVATAR_MIN = 1;
 const AVATAR_MAX = 6;
 const NUMBER_OF_PHOTOS = 25;
-const NUMBER_OF_COMMENTS = 7;
+const NUMBER_OF_COMMENTS = 14;
 
 function randomComment() {
   return {

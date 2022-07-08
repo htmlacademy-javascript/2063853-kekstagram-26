@@ -15,20 +15,6 @@ getRandomeNumber ();
 function isEscapeKey(evt) {
   return evt.key === 'Escape';
 }
-// //кнопка клавиатуры enter
-// function isEnterKey(evt) {
-//   return evt.key === 'Enter';
-// }
-//создание элемента в Дом-дереве
-// const makeElement = function (tagName, className, text) {
-//   const element = document.createElement(tagName);
-//   element.classList.add(className);
-//   if (text) {
-//     element.textContent = text;
-//   }
-//   return element;
-// };
-
 
 export {getRandomeNumber, isEscapeKey};
 
