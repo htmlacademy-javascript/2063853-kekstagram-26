@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, resetEffects } from './photo-edit.js';
+import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects } from './photo-edit.js';
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
@@ -13,9 +13,9 @@ const HASHTAG_MIN = 2;
 const HASHTAG_MAX = 20;
 const HASHTAGS_MAX = 5;
 
-uploadButton.addEventListener('change', () => openUploadField());
+uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
-uploadCancelButton.addEventListener('click', () => closeUploadField());
+uploadCancelButton.addEventListener('click', () => closeButtonClickHandler());
 
 function isFocused () {
   return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
@@ -25,11 +25,11 @@ function isFocused () {
 function addKeydownEscHandler(evt) {
   if (isEscapeKey(evt) && !isFocused()) {
     evt.preventDefault();
-    closeUploadField();
+    closeButtonClickHandler();
   }
 }
 
-function openUploadField() {
+function uploadButtonClickHandler() {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
@@ -41,7 +41,7 @@ function openUploadField() {
   document.addEventListener('keydown', addKeydownEscHandler);
 }
 
-function closeUploadField() {
+function closeButtonClickHandler() {
   uploadPopup.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
@@ -53,9 +53,9 @@ function closeUploadField() {
 }
 
 //изменение масштаба фото
-biggerButton.addEventListener('click', makePhotoBigger);
+biggerButton.addEventListener('click', biggerButtonClickHandler);
 
-smallerButton.addEventListener('click', makePhotoSmaller);
+smallerButton.addEventListener('click', smallerButtonClickHandler);
 
 //валидация
 const pristine = new Pristine(uploadForm, {
