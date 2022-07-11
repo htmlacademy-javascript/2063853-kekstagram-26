@@ -18,7 +18,7 @@ function thumbnailClickHandler(photo) {
   document.body.classList.add('modal-open');
 
   //добавление обработчика по нажатию эскейп
-  document.addEventListener('keydown', addKeydownEscHandler);
+  document.addEventListener('keydown', keydownEscHandler);
 
   document.body.appendChild(photoFull);
 }
@@ -72,12 +72,12 @@ function closeButtonClickHandler() {
     document.body.classList.remove('modal-open');
 
     //удаление обработчика на эскейп
-    document.removeEventListener('keydown', addKeydownEscHandler);
+    document.removeEventListener('keydown', keydownEscHandler);
   }
 }
 
 //закрытие фото по клавише esc
-function addKeydownEscHandler(evt, photo) {
+function keydownEscHandler(evt, photo) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeButtonClickHandler(photo);

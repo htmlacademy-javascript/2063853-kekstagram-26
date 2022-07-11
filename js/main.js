@@ -1,12 +1,14 @@
 import { createUsersPhoto } from './photo-create.js';
 import { thumbnailClickHandler } from './photo-full.js';
-import { showSuccessMessage, downloadPhoto } from './photo-input.js';
+import { downloadPhoto } from './photo-input.js';
+import { showSuccessMessage } from './messages.js';
 import './photo-edit.js';
 import { getData } from './api.js';
 
 const pictureListFragment = document.createDocumentFragment();
 const picturesList = document.querySelector('.pictures');
 
+//подгрузка пользовательских фото с сервера
 getData(showUsersPhotos);
 
 function showUsersPhotos(photos) {
@@ -23,5 +25,5 @@ function addThumbnailClickHandler(photo) {
   pictureListFragment.appendChild(thumbnail);
 }
 
-//загрузка фото
+//загрузка фото нового фото на сервер
 downloadPhoto(showSuccessMessage);

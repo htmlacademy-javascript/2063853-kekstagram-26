@@ -122,7 +122,8 @@ function applyEffectToPhotoPreview(effectValue) {
 
 function resetEffects() {
   updateSlider(EFFECT_NONE);
-  applyEffectToPhotoPreview(EFFECT_NONE);
+  imagePreview.className = '';
+  imagePreview.style.filter = '';
 }
 
 export { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects };
