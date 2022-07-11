@@ -1,5 +1,6 @@
-import { isEscapeKey } from './util.js';
+import { isEscapeKey, showAlert } from './util.js';
 import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects } from './photo-edit.js';
+import { sendData } from './api.js';
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
@@ -15,19 +16,8 @@ const HASHTAGS_MAX = 5;
 
 uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
-uploadCancelButton.addEventListener('click', () => closeButtonClickHandler());
+uploadCancelButton.addEventListener('click', () => uploadCancelButtonClickHandler());
 
-function isFocused () {
-  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
-}
-
-//закрытие формы редактирования по клавише esc
-function addKeydownEscHandler(evt) {
-  if (isEscapeKey(evt) && !isFocused()) {
-    evt.preventDefault();
-    closeButtonClickHandler();
-  }
-}
 
 function uploadButtonClickHandler() {
   uploadPopup.classList.remove ('hidden');
@@ -41,7 +31,7 @@ function uploadButtonClickHandler() {
   document.addEventListener('keydown', addKeydownEscHandler);
 }
 
-function closeButtonClickHandler() {
+function closeFuckenWindow() {
   uploadPopup.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
@@ -50,6 +40,39 @@ function closeButtonClickHandler() {
 
   //очистка формы
   uploadForm.reset();
+}
+
+function uploadCancelButtonClickHandler() {
+  closeFuckenWindow();
+}
+
+function photoUploadEscHander(evt) {
+  if (isEscapeKey(evt) && ! isFocused()) {
+    evt.preventDefault();
+    uploadCancelButtonClickHandler();
+  }
+}
+
+function succeessMessageEscHandler(evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeSuccessMessageWindow();
+  }
+}
+
+//закрытие формы редактирования по клавише esc
+function addKeydownEscHandler(evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    if(! isFocused()) {
+      uploadCancelButtonClickHandler();
+    }
+    closeSuccessMessageWindow();
+  }
+}
+
+function isFocused () {
+  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 }
 
 //изменение масштаба фото
@@ -63,10 +86,44 @@ const pristine = new Pristine(uploadForm, {
   errorTextParent: 'img-upload__field-wrapper',
 });
 
-uploadForm.addEventListener('submit', (evt) => {
-  if (!pristine.validate()) {
-    evt.preventDefault();}
-});
+function createSuccessMessage() {
+  const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
+  const successMessage = successMessageTemplate.cloneNode(true);
+
+  const successButtonClose = successMessage.querySelector('.success__button');
+  successButtonClose.addEventListener('click', () => SuccessButtonClickHandler(successMessage));
+
+  return successMessage;
+}
+
+function SuccessButtonClickHandler(element) {
+  element.remove();
+}
+
+
+function showSuccessMessage() {
+  uploadCancelButtonClickHandler();
+
+  const successMessage = createSuccessMessage();
+  document.body.appendChild (successMessage);
+  document.addEventListener('keydown', addKeydownEscHandler);
+}
+
+
+function downloadPhoto (onSuccess) {
+  uploadForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (pristine.validate()) {
+      sendData (
+        () => onSuccess(),
+        () => showAlert('Can not save your photo'),
+        new FormData(uploadForm),
+      );
+    }
+
+  });
+}
 
 function createHashtagsArray(value) {
   return value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
@@ -102,3 +159,4 @@ function validateAllSymbols (value) {
 
 pristine.addValidator(hashtagsFild, validateAllSymbols, 'Хэш-тег состоит из букв и чисел');
 
+export {downloadPhoto, showSuccessMessage};

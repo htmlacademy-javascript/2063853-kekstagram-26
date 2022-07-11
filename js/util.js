@@ -20,7 +20,7 @@ function isEscapeKey(evt) {
 //обработка ошибок
 const ALERT_SHOW_TIME = 5000;
 
-function showAlert (message) {
+function showAlert(message) {
   const alertContainer = document.createElement('div');
   alertContainer.style.zIndex = '100';
   alertContainer.style.position = 'absolute';
