@@ -33,17 +33,16 @@ function uploadButtonClickHandler() {
 }
 
 function uploadPopupCancelButtonClickHandler() {
-  closeUploadPopup(true);
+  closeUploadPopup();
 }
 
-function closeUploadPopup(resetForm) {
+function closeUploadPopup() {
   uploadPopup.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
-  if (resetForm) {
-    //очистка формы
-    uploadForm.reset();
-  }
+  //очистка формы
+  uploadForm.reset();
+
 
   //удаление обработчика на эскейп
   document.removeEventListener('keydown', uploadPopupKeydownEscHandler);
@@ -52,7 +51,7 @@ function closeUploadPopup(resetForm) {
 function uploadPopupKeydownEscHandler(evt) {
   if (isEscapeKey(evt) && ! isFocused()) {
     evt.preventDefault();
-    closeUploadPopup(true);
+    closeUploadPopup();
   }
 }
 
