@@ -11,7 +11,7 @@ function initializeCurrentScaleValue() {
   imagePreview.style.transform = `scale(${currentScaleValue * 0.01})`;
 }
 
-function makePhotoBigger () {
+function biggerButtonClickHandler () {
   if (currentScaleValue < SCALE_MAX) {
     currentScaleValue += SCALE_INCREMENT;
     scaleValue.value = `${currentScaleValue.toString()}%`;
@@ -20,7 +20,7 @@ function makePhotoBigger () {
   }
 }
 
-function makePhotoSmaller () {
+function smallerButtonClickHandler () {
   if (currentScaleValue > SCALE_MIN) {
     currentScaleValue -= SCALE_INCREMENT;
     scaleValue.value = `${currentScaleValue.toString()}%`;
@@ -59,14 +59,16 @@ const effectLevelValue = document.querySelector('.effect-level__value');
 const effectButtonsList = document.querySelector('.effects__list');
 
 //применение эффекта при клике на кнопку эффекта
-effectButtonsList.addEventListener('change', (event) => {
+effectButtonsList.addEventListener('change', effectButtonChangeHandler);
+
+function effectButtonChangeHandler (event) {
   const targetEffectButton = event.target;
 
   currentEffect = effect[targetEffectButton.value];
 
   updateSlider(currentEffect);
   applyEffectToPhotoPreview(currentEffect.max);
-});
+}
 
 //создание слайдера
 noUiSlider.create(sliderElement, {
@@ -120,7 +122,8 @@ function applyEffectToPhotoPreview(effectValue) {
 
 function resetEffects() {
   updateSlider(EFFECT_NONE);
-  applyEffectToPhotoPreview(EFFECT_NONE);
+  imagePreview.className = '';
+  imagePreview.style.filter = '';
 }
 
-export { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, resetEffects };
+export { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects };

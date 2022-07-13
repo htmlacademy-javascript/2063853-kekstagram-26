@@ -1,35 +1,26 @@
 import { isEscapeKey } from './util.js';
-import { initializeCurrentScaleValue, makePhotoBigger, makePhotoSmaller, resetEffects } from './photo-edit.js';
+import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects } from './photo-edit.js';
+import { sendData } from './api.js';
+import { showErrorMessage } from './messages.js';
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
-const uploadCancelButton = document.querySelector('.img-upload__cancel');
+const uploadPopupCancelButton = document.querySelector('.img-upload__cancel');
 const uploadForm = document.querySelector('.img-upload__form');
 const descriptionFild = document.querySelector('.text__description');
 const hashtagsFild = document.querySelector('.text__hashtags');
 const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
+const submitButton = document.querySelector('#upload-submit');
 const HASHTAG_MIN = 2;
 const HASHTAG_MAX = 20;
 const HASHTAGS_MAX = 5;
 
-uploadButton.addEventListener('change', () => openUploadField());
+uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
-uploadCancelButton.addEventListener('click', () => closeUploadField());
+uploadPopupCancelButton.addEventListener('click', () => uploadPopupCancelButtonClickHandler());
 
-function isFocused () {
-  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
-}
-
-//закрытие формы редактирования по клавише esc
-function addKeydownEscHandler(evt) {
-  if (isEscapeKey(evt) && !isFocused()) {
-    evt.preventDefault();
-    closeUploadField();
-  }
-}
-
-function openUploadField() {
+function uploadButtonClickHandler() {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
@@ -38,24 +29,40 @@ function openUploadField() {
   resetEffects();
 
   //добавление обработчика на эскейп
-  document.addEventListener('keydown', addKeydownEscHandler);
+  document.addEventListener('keydown', uploadPopupKeydownEscHandler);
 }
 
-function closeUploadField() {
+function uploadPopupCancelButtonClickHandler() {
+  closeUploadPopup();
+}
+
+function closeUploadPopup() {
   uploadPopup.classList.add('hidden');
   document.body.classList.remove('modal-open');
 
-  //удаление обработчика на эскейп
-  document.removeEventListener('keydown', addKeydownEscHandler);
-
   //очистка формы
   uploadForm.reset();
+
+
+  //удаление обработчика на эскейп
+  document.removeEventListener('keydown', uploadPopupKeydownEscHandler);
+}
+
+function uploadPopupKeydownEscHandler(evt) {
+  if (isEscapeKey(evt) && ! isFocused()) {
+    evt.preventDefault();
+    closeUploadPopup();
+  }
+}
+
+function isFocused () {
+  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 }
 
 //изменение масштаба фото
-biggerButton.addEventListener('click', makePhotoBigger);
+biggerButton.addEventListener('click', biggerButtonClickHandler);
 
-smallerButton.addEventListener('click', makePhotoSmaller);
+smallerButton.addEventListener('click', smallerButtonClickHandler);
 
 //валидация
 const pristine = new Pristine(uploadForm, {
@@ -63,10 +70,8 @@ const pristine = new Pristine(uploadForm, {
   errorTextParent: 'img-upload__field-wrapper',
 });
 
-uploadForm.addEventListener('submit', (evt) => {
-  if (!pristine.validate()) {
-    evt.preventDefault();}
-});
+//сброс ошибок валидации
+uploadForm.addEventListener('reset', () => pristine.reset());
 
 function createHashtagsArray(value) {
   return value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
@@ -102,3 +107,38 @@ function validateAllSymbols (value) {
 
 pristine.addValidator(hashtagsFild, validateAllSymbols, 'Хэш-тег состоит из букв и чисел');
 
+//загрузка фото после валидации
+function downloadPhoto (onSuccess) {
+  uploadForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (pristine.validate()) {
+      blockSubmitButton();
+
+      sendData (
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+        },
+        () => {
+          showErrorMessage();
+          unblockSubmitButton();
+        },
+        new FormData(uploadForm),
+      );
+    }
+  });
+}
+
+//блокировка клавиши опубликовать на время обращения к серверу
+function blockSubmitButton() {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Публикация...';
+}
+
+function unblockSubmitButton() {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+}
+
+export {downloadPhoto, closeUploadPopup};

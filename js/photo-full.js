@@ -4,7 +4,7 @@ const fullPhotoTemplate = document.querySelector('#big-picture').content.querySe
 const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
 
 //механизм открытия полноразмерного фото
-function openPhotoFull(photo) {
+function thumbnailClickHandler(photo) {
   const photoFull = createPhotoFull(photo); //рисуем большое фото
 
   //прячем счетчик и загрузчик комментов
@@ -18,7 +18,7 @@ function openPhotoFull(photo) {
   document.body.classList.add('modal-open');
 
   //добавление обработчика по нажатию эскейп
-  document.addEventListener('keydown', addKeydownEscHandler);
+  document.addEventListener('keydown', keydownEscHandler);
 
   document.body.appendChild(photoFull);
 }
@@ -43,7 +43,7 @@ function createPhotoFull ({url, like, comments, description}) {
   }
 
   //добавляем обработчик на кнопку закрытия фото
-  photoFull.querySelector('.big-picture__cancel').addEventListener('click', () => closePhotoFull(photoFull));
+  photoFull.querySelector('.big-picture__cancel').addEventListener('click', () => closeButtonClickHandler(photoFull));
 
   return photoFull;
 }
@@ -64,7 +64,7 @@ function createUsersComment ({avatar, name, message}) {
 }
 
 //закрытие большого фото
-function closePhotoFull() {
+function closeButtonClickHandler() {
   const photoFull = document.querySelector('.big-picture:not(.hidden)');
 
   if (photoFull) {
@@ -72,16 +72,16 @@ function closePhotoFull() {
     document.body.classList.remove('modal-open');
 
     //удаление обработчика на эскейп
-    document.removeEventListener('keydown', addKeydownEscHandler);
+    document.removeEventListener('keydown', keydownEscHandler);
   }
 }
 
 //закрытие фото по клавише esc
-function addKeydownEscHandler(evt, photo) {
+function keydownEscHandler(evt, photo) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closePhotoFull(photo);
+    closeButtonClickHandler(photo);
   }
 }
 
-export {openPhotoFull, closePhotoFull};
+export { thumbnailClickHandler };
