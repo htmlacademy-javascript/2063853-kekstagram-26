@@ -1,23 +1,23 @@
 import{ showAlert } from './util.js';
 
+const DATA_SERVER = 'https://26.javascript.pages.academy/kekstagram/data';
+const SEND_SERVER = 'https://26.javascript.pages.academy/kekstagram';
+
 function getData (onSuccess) {
-  fetch('https://26.javascript.pages.academy/kekstagram/data')
+  fetch(DATA_SERVER)
     .then((response) => {
-
       if (response.ok) {
-        return response;
+        return response.json();
       }
-
-      showAlert('Не удалось загрузить данные. Обновите страницу!');
+      throw new Error ('Не удалось загрузить данные. Обновите страницу!');
     })
-    .then((response) => response.json())
-    .then((photos) => onSuccess(photos))
-    .catch(() => showAlert('Не удалось загрузить данные. Обновите страницу!') );
+    .then(onSuccess)
+    .catch((error) => showAlert(error.message) );
 }
 
 function sendData(onSuccess, onFail, body) {
   fetch(
-    'https://26.javascript.pages.academy/kekstagram',
+    SEND_SERVER,
     {
       method: 'POST',
       body: body,

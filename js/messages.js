@@ -1,99 +1,64 @@
 import { isEscapeKey } from './util.js';
 import {closeUploadPopup } from './photo-input.js';
 
+const SUCCESS_MESSAGE = 'success';
+const ERROR_MESSAGE = 'error';
+
 //функция срабатывает при успешной загрузке фото
 function showSuccessMessage() {
-  closeUploadPopup(true);
+  closeUploadPopup();
 
-  const successMessage = createSuccessMessage();
-  document.body.appendChild(successMessage);
+  document.body.appendChild(createMessage(SUCCESS_MESSAGE));
 
   document.addEventListener('keydown', messageKeydownEscHandler);
-  document.addEventListener('click', outOfSucceessMessageClickHandler);
+  document.addEventListener('click', outOfMessageClickHandler);
 }
 
-function createSuccessMessage() {
-  const successMessageTemplate = document.querySelector('#success').content.querySelector('.success');
-  const successMessage = successMessageTemplate.cloneNode(true);
+//функция срабатывает при ошибке загрузки фото
+function showErrorMessage() {
+  document.body.appendChild(createMessage(ERROR_MESSAGE));
+
+  //добавила обработчики
+  document.addEventListener('keydown', messageKeydownEscHandler);
+  document.addEventListener('click', outOfMessageClickHandler);
+}
+
+function createMessage(message) {
+  const messageTemplate = document.querySelector(`#${message}`).content.querySelector(`.${message}`);
+  const messageWindow = messageTemplate.cloneNode(true);
 
   //добавляем обработчик на кнопку закрытия фото
-  const successButtonClose = successMessage.querySelector('.success__button');
+  const buttonClose = messageWindow.querySelector(`.${message}__button`);
   //добавляем обработчик закрытия при клике за окном
-  successButtonClose.addEventListener('click', () => buttonCloseClickHandler());
+  buttonClose.addEventListener('click', buttonCloseClickHandler);
 
-  return successMessage;
+  return messageWindow;
 }
 
-function buttonCloseClickHandler(){
-  closeSuccessMessageWindow();
+function buttonCloseClickHandler(message){
+  closeMessageWindow(message);
 }
 
-function closeSuccessMessageWindow() {
-  const successMessage = document.querySelector('.success');
-  successMessage.remove();
+function closeMessageWindow() {
+  const  messageWindow = document.querySelector('.message');
+  messageWindow.remove();
 
   //удаление обработчиков
   document.removeEventListener('keydown', messageKeydownEscHandler);
-  document.removeEventListener('click', outOfSucceessMessageClickHandler);
+  document.removeEventListener('click', outOfMessageClickHandler);
 }
 
 function messageKeydownEscHandler(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    closeSuccessMessageWindow();
+    closeMessageWindow();
   }
 }
 
-function outOfSucceessMessageClickHandler(evt) {
-  if(evt.target.className === 'success') {
-    closeSuccessMessageWindow();
-  }
-}
-
-////функция срабатывает при ошибке загрузки фото
-function showErrorMessage() {
-  closeUploadPopup(false);
-
-  document.body.appendChild(createErrorMessage());
-
-  document.addEventListener('keydown', messageErrorKeydownEscHandler);
-  document.addEventListener('click', outOfErrorMessageClickHandler);
-}
-
-function createErrorMessage() {
-  const errorMessageTemplate = document.querySelector('#error').content.querySelector('.error');
-  const errorMessage = errorMessageTemplate.cloneNode(true);
-
-  //добавляем обработчик на кнопку закрытия фото
-  const errorButtonClose = errorMessage.querySelector('.error__button');
-  errorButtonClose.addEventListener('click', () => buttonErrorCloseClickHandler());
-
-  return errorMessage;
-}
-
-function closeErrorMessageWindow() {
-  const errorMessage = document.querySelector('.error');
-  errorMessage.remove();
-
-  //удаление обработчиков
-  document.removeEventListener('keydown', messageErrorKeydownEscHandler);
-  document.removeEventListener('click', outOfErrorMessageClickHandler);
-}
-
-function buttonErrorCloseClickHandler(){
-  closeErrorMessageWindow();
-}
-
-function messageErrorKeydownEscHandler(evt) {
-  if (isEscapeKey(evt)) {
+function outOfMessageClickHandler(evt) {
+  if (evt.target.classList.contains('message')) {
     evt.preventDefault();
-    buttonErrorCloseClickHandler();
-  }
-}
-
-function outOfErrorMessageClickHandler(evt) {
-  if(evt.target.className === 'error') {
-    closeErrorMessageWindow();
+    closeMessageWindow();
   }
 }
 
