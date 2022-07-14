@@ -10,8 +10,6 @@ function getRandomeNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-getRandomeNumber ();
-
 //кнопка клавиатуры esc
 function isEscapeKey(evt) {
   return evt.key === 'Escape';
@@ -59,25 +57,21 @@ function debounce (callback, timeoutDelay = 500) {
   };
 }
 
-function throttle (callback, delayBetweenFrames) {
-  // Используем замыкания, чтобы время "последнего кадра" навсегда приклеилось
-  // к возвращаемой функции с условием, тогда мы его сможем перезаписывать
-  let lastTime = 0;
+//функция перемешивает элементы в массиве - optimized version of Fisher-Yates:
+function shufflePhotos(photos) {
+  for (let i = photos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [photos[i], photos[j]] = [photos[j], photos[i]];
+  }
 
-  return (...rest) => {
-    // Получаем текущую дату в миллисекундах,
-    // чтобы можно было в дальнейшем
-    // вычислять разницу между кадрами
-    const now = new Date();
-
-    // Если время между кадрами больше задержки,
-    // вызываем наш колбэк и перезаписываем lastTime
-    // временем "последнего кадра"
-    if (now - lastTime >= delayBetweenFrames) {
-      callback.apply(this, rest);
-      lastTime = now;
-    }
-  };
+  return photos;
 }
 
-export {getRandomeNumber, isEscapeKey, showAlert};
+//функция для сортировки массива по убыванию
+function comparePhotos (photoA, photoB) {
+  const rankA = photoA.comments.length;
+  const rankB = photoB.comments.length;
+  return rankB - rankA;
+}
+
+export {isEscapeKey, showAlert, debounce, getRandomeNumber, shufflePhotos, comparePhotos};
