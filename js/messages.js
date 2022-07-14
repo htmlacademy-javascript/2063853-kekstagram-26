@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import {closeUploadPopup } from './photo-input.js';
+import {closeUploadPopup, addUploadPopoupKeydownEscHandler,removeUploadPopoupKeydownEscHandler } from './photo-input.js';
 
 const SUCCESS_MESSAGE = 'success';
 const ERROR_MESSAGE = 'error';
@@ -21,6 +21,9 @@ function showErrorMessage() {
   //добавила обработчики
   document.addEventListener('keydown', messageKeydownEscHandler);
   document.addEventListener('click', outOfMessageClickHandler);
+
+  //удалила обработчик esc на попапе редактирования фото
+  removeUploadPopoupKeydownEscHandler();
 }
 
 function createMessage(message) {
@@ -41,11 +44,17 @@ function buttonCloseClickHandler(message){
 
 function closeMessageWindow() {
   const  messageWindow = document.querySelector('.message');
+
+  if (messageWindow.classList.contains('error')) {
+    addUploadPopoupKeydownEscHandler();
+  }
+
   messageWindow.remove();
 
   //удаление обработчиков
   document.removeEventListener('keydown', messageKeydownEscHandler);
   document.removeEventListener('click', outOfMessageClickHandler);
+
 }
 
 function messageKeydownEscHandler(evt) {
