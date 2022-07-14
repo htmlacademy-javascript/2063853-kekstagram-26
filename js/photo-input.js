@@ -1,5 +1,6 @@
 import { isEscapeKey } from './util.js';
-import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler, resetEffects } from './photo-edit.js';
+import { resetEffects } from './photo-effects.js';
+import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler } from './photo-scale.js';
 import { sendData } from './api.js';
 import { showErrorMessage } from './messages.js';
 
@@ -29,7 +30,7 @@ function uploadButtonClickHandler() {
   resetEffects();
 
   //добавление обработчика на эскейп
-  document.addEventListener('keydown', uploadPopupKeydownEscHandler);
+  addUploadPopoupKeydownEscHandler();
 }
 
 function uploadPopupCancelButtonClickHandler() {
@@ -43,13 +44,20 @@ function closeUploadPopup() {
   //очистка формы
   uploadForm.reset();
 
-
   //удаление обработчика на эскейп
+  removeUploadPopoupKeydownEscHandler();
+}
+
+function addUploadPopoupKeydownEscHandler() {
+  document.addEventListener('keydown', uploadPopupKeydownEscHandler);
+}
+
+function removeUploadPopoupKeydownEscHandler() {
   document.removeEventListener('keydown', uploadPopupKeydownEscHandler);
 }
 
 function uploadPopupKeydownEscHandler(evt) {
-  if (isEscapeKey(evt) && ! isFocused()) {
+  if (isEscapeKey(evt) && !isFocused()) {
     evt.preventDefault();
     closeUploadPopup();
   }
@@ -141,4 +149,4 @@ function unblockSubmitButton() {
   submitButton.textContent = 'Опубликовать';
 }
 
-export {downloadPhoto, closeUploadPopup};
+export {downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler};

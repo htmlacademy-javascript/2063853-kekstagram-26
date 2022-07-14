@@ -10,8 +10,6 @@ function getRandomeNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-getRandomeNumber ();
-
 //кнопка клавиатуры esc
 function isEscapeKey(evt) {
   return evt.key === 'Escape';
@@ -41,6 +39,39 @@ function showAlert(message) {
   }, ALERT_SHOW_TIME);
 }
 
+function debounce (callback, timeoutDelay = 500) {
+  // Используем замыкания, чтобы id таймаута у нас навсегда приклеился
+  // к возвращаемой функции с setTimeout, тогда мы его сможем перезаписывать
+  let timeoutId;
 
-export {getRandomeNumber, isEscapeKey, showAlert};
+  return (...rest) => {
+    // Перед каждым новым вызовом удаляем предыдущий таймаут,
+    // чтобы они не накапливались
+    clearTimeout(timeoutId);
 
+    // Затем устанавливаем новый таймаут с вызовом колбэка на ту же задержку
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+
+    // Таким образом цикл «поставить таймаут - удалить таймаут» будет выполняться,
+    // пока действие совершается чаще, чем переданная задержка timeoutDelay
+  };
+}
+
+//функция перемешивает элементы в массиве - optimized version of Fisher-Yates:
+function shufflePhotos(photos) {
+  for (let i = photos.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [photos[i], photos[j]] = [photos[j], photos[i]];
+  }
+
+  return photos;
+}
+
+//функция для сортировки массива по убыванию
+function comparePhotos (photoA, photoB) {
+  const rankA = photoA.comments.length;
+  const rankB = photoB.comments.length;
+  return rankB - rankA;
+}
+
+export {isEscapeKey, showAlert, debounce, getRandomeNumber, shufflePhotos, comparePhotos};

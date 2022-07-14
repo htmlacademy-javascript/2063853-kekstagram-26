@@ -1,29 +1,20 @@
-import { createUsersPhoto } from './photo-create.js';
-import { thumbnailClickHandler } from './photo-full.js';
 import { downloadPhoto } from './photo-input.js';
 import { showSuccessMessage } from './messages.js';
-import './photo-edit.js';
 import { getData } from './api.js';
+import { defaultFilterClickHandler,discussedFilterButtonClickHandler, randomFilterButtonClickHandler } from './filters.js';
+import { showUsersPhotosThumbnails } from './thumbnails.js';
+import { debounce } from './util.js';
 
-const pictureListFragment = document.createDocumentFragment();
-const picturesList = document.querySelector('.pictures');
+const randomFilterButton = document.querySelector('#filter-random');
+const discussedFilterButton = document.querySelector('#filter-discussed');
+const defaultFilterButton = document.querySelector('#filter-default');
 
 //подгрузка пользовательских фото с сервера
-getData(showUsersPhotos);
+getData(showUsersPhotosThumbnails);
 
-function showUsersPhotos(photos) {
-  photos.forEach(addThumbnailClickHandler);
-  picturesList.appendChild(pictureListFragment);
-}
-
-//на каждую миниатюру добавим обработчик события по клику и соберем их в фрагмент
-function addThumbnailClickHandler(photo) {
-  const thumbnail = createUsersPhoto(photo);
-
-  thumbnail.addEventListener('click', () => thumbnailClickHandler(photo));
-
-  pictureListFragment.appendChild(thumbnail);
-}
+defaultFilterButton.addEventListener('click', debounce(defaultFilterClickHandler));
+discussedFilterButton.addEventListener('click', debounce(discussedFilterButtonClickHandler));
+randomFilterButton.addEventListener('click', debounce(randomFilterButtonClickHandler));
 
 //загрузка фото нового фото на сервер
 downloadPhoto(showSuccessMessage);
