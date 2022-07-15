@@ -12,7 +12,7 @@ const effect = {
 const EFFECT_NONE = effect.none;
 let currentEffect = effect.none;
 
-//функция - создатель объекта для эффекта
+//функция - конструктор объекта для эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
   return {
     name: name,

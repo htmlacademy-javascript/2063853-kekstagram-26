@@ -1,23 +1,6 @@
-//функция - генератор случайного числа в диапазоне от min до max (включительно)
-function getRandomeNumber(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-
-  if (max <= min || max < 0 || min < 0) {
-    throw new Error('Entre the correct value range');
-  }
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-//кнопка клавиатуры esc
-function isEscapeKey(evt) {
-  return evt.key === 'Escape';
-}
-
-//обработка ошибок
 const ALERT_SHOW_TIME = 5000;
 
+//сообщение об ошибке
 function showAlert(message) {
   const alertContainer = document.createElement('div');
   alertContainer.style.zIndex = '100';
@@ -37,6 +20,11 @@ function showAlert(message) {
   setTimeout(() => {
     alertContainer.remove();
   }, ALERT_SHOW_TIME);
+}
+
+//кнопка клавиатуры esc
+function isEscapeKey(evt) {
+  return evt.key === 'Escape';
 }
 
 function debounce (callback, timeoutDelay = 500) {
@@ -74,4 +62,4 @@ function comparePhotos (photoA, photoB) {
   return rankB - rankA;
 }
 
-export {isEscapeKey, showAlert, debounce, getRandomeNumber, shufflePhotos, comparePhotos};
+export { isEscapeKey, showAlert, debounce, shufflePhotos, comparePhotos };
