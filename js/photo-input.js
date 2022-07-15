@@ -166,4 +166,4 @@ function unblockSubmitButton() {
   submitButton.textContent = 'Опубликовать';
 }
 
-export {downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler, uploadButtonClickHandler};
+export { downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler, uploadButtonClickHandler };
