@@ -1,4 +1,4 @@
-import { isEscapeKey } from './util.js';
+import { isEscapeKey, showAlert} from './util.js';
 import { resetEffects } from './photo-effects.js';
 import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler } from './photo-scale.js';
 import { sendData } from './api.js';
@@ -13,9 +13,11 @@ const hashtagsFild = document.querySelector('.text__hashtags');
 const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
 const submitButton = document.querySelector('#upload-submit');
+const photoPreview = document.querySelector('.img-upload__preview img');
 const HASHTAG_MIN = 2;
 const HASHTAG_MAX = 20;
 const HASHTAGS_MAX = 5;
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
@@ -25,12 +27,27 @@ function uploadButtonClickHandler() {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
+  choseUsersPhoto();
+
   //установка масштаба и стиля фото по - умолчанию
   initializeCurrentScaleValue();
   resetEffects();
 
   //добавление обработчика на эскейп
   addUploadPopoupKeydownEscHandler();
+}
+
+//подстановка пользовательского фото для загрузки
+function choseUsersPhoto() {
+  const file = uploadButton.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    photoPreview.src = URL.createObjectURL(file);
+  }
+  showAlert('Выберите файл с расширением jpg, jpeg или png');
 }
 
 function uploadPopupCancelButtonClickHandler() {
@@ -149,4 +166,4 @@ function unblockSubmitButton() {
   submitButton.textContent = 'Опубликовать';
 }
 
-export {downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler};
+export {downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler, uploadButtonClickHandler};
