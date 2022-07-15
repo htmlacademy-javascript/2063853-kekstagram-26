@@ -2,18 +2,18 @@ const imagePreview = document.querySelector('.img-upload__preview img');
 
 //эффекты
 const effect = {
-  none: BuildEffect('none', 0, 0, 0, '', ''),
-  chrome: BuildEffect('chrome', 0, 1, 0.1, 'grayscale', ''),
-  sepia: BuildEffect('sepia', 0, 1, 0.1, 'sepia', ''),
-  phobos: BuildEffect('phobos', 0, 3, 0.1, 'blur', 'px'),
-  marvin: BuildEffect('marvin', 0, 100, 1, 'invert', '%'),
-  heat: BuildEffect('heat', 1, 3, 0.1, 'brightness', ''),
+  none: buildEffect('none', 0, 0, 0, '', ''),
+  chrome: buildEffect('chrome', 0, 1, 0.1, 'grayscale', ''),
+  sepia: buildEffect('sepia', 0, 1, 0.1, 'sepia', ''),
+  phobos: buildEffect('phobos', 0, 3, 0.1, 'blur', 'px'),
+  marvin: buildEffect('marvin', 0, 100, 1, 'invert', '%'),
+  heat: buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
 };
 const EFFECT_NONE = effect.none;
 let currentEffect = effect.none;
 
 //функция - конструктор объекта для эффекта
-function BuildEffect(name, min, max, step, cssStyle, cssUnit) {
+function buildEffect(name, min, max, step, cssStyle, cssUnit) {
   return {
     name: name,
     min: min,
