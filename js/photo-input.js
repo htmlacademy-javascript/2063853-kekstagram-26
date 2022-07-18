@@ -46,8 +46,8 @@ function choseUsersPhoto() {
 
   if (matches) {
     photoPreview.src = URL.createObjectURL(file);
-  }
-  showAlert('Выберите файл с расширением jpg, jpeg или png');
+  } else {
+    showAlert('Выберите файл с расширением jpg, jpeg или png');}
 }
 
 function uploadPopupCancelButtonClickHandler() {
