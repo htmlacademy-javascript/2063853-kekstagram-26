@@ -25,7 +25,7 @@ function showUsersPhotosThumbnails(thumbnails) {
   });
 }
 
-//функция - показывает кнопки фильтров
+//сколько фото уже загружено
 function incrementLoadedImagesCounter(totalImagesNumber) {
   loadedImagesCounter ++;
   if ( loadedImagesCounter === totalImagesNumber ) {

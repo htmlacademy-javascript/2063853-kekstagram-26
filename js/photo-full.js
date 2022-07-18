@@ -2,8 +2,6 @@ import { isEscapeKey } from './util.js';
 
 const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
 const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
-//const commentsCount = document.querySelector('.social__comment-count');
-//const commentsLoaderButton = document.querySelector('.social__comments-loader');
 const COMMENTS_INCREMENT = 5;
 
 //механизм открытия полноразмерного фото
@@ -28,16 +26,14 @@ function createPhotoFull ({url, like, comments, description}) {
   photoFull.querySelector('img').src = url;
   photoFull.querySelector('.likes-count').textContent = like;
   photoFull.querySelector('.social__caption').textContent = description;
+  photoFull.querySelector('.comments-count').textContent = comments.length;
 
   //выводим комментарии
   const commentsList = photoFull.querySelector('.social__comments');
   const commentsLoaderButton = photoFull.querySelector('.social__comments-loader');
-
   let shownCommentsNum = Math.min(COMMENTS_INCREMENT, comments.length);
-  photoFull.querySelector('.comments-count-shown').textContent = shownCommentsNum;
-  photoFull.querySelector('.comments-count').textContent = comments.length;
 
-  commentsList.innerHTML = '';//удалить комментарии, которые были в разметке
+  commentsList.innerHTML = '';//удалить комментарии, которые уже были в разметке
 
   if (comments.length === 0) {
     commentsList.remove();//удаляем весь блок если нет комментариев
@@ -57,7 +53,6 @@ function createPhotoFull ({url, like, comments, description}) {
       commentsList.appendChild(createUsersComment(comments[i]));
     }
     shownCommentsNum = Math.min(shownCommentsNum + COMMENTS_INCREMENT, comments.length);
-
     photoFull.querySelector('.comments-count-shown').textContent = shownCommentsNum;//записать количество показанных комментов в счетчик
 
     if (shownCommentsNum === comments.length) {
