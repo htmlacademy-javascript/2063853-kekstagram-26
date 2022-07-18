@@ -1,5 +1,4 @@
 const imagePreview = document.querySelector('.img-upload__preview img');
-
 //эффекты
 const effect = {
   none: buildEffect('none', 0, 0, 0, '', ''),
@@ -11,8 +10,12 @@ const effect = {
 };
 const EFFECT_NONE = effect.none;
 let currentEffect = effect.none;
+//слайдер
+const sliderElement = document.querySelector('.effect-level__slider');
+const effectLevelValue = document.querySelector('.effect-level__value');
+const effectButtonsList = document.querySelector('.effects__list');
 
-//функция - конструктор объекта для эффекта
+//функция - создатель объекта для каждого эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
   return {
     name: name,
@@ -23,11 +26,6 @@ function buildEffect(name, min, max, step, cssStyle, cssUnit) {
     cssUnit: cssUnit
   };
 }
-
-//слайдер
-const sliderElement = document.querySelector('.effect-level__slider');
-const effectLevelValue = document.querySelector('.effect-level__value');
-const effectButtonsList = document.querySelector('.effects__list');
 
 //применение эффекта при клике на кнопку эффекта
 effectButtonsList.addEventListener('change', effectButtonChangeHandler);
