@@ -10,46 +10,43 @@ const RANDOM_PHOTOS_COUNT = 10;
 
 
 function defaultFilterClickHandler() {
-  removeActiveButtonClass();
-  defaultFilterButton.classList.add('img-filters__button--active');
-  defaultFilterButton.disabled = true;
+  initializeFilter(defaultFilterButton);
   getData(showUsersPhotosThumbnails);
 }
 
-function discussedFilterButtonClickHandler (){
-  removeActiveButtonClass();
-  discussedFilterButton.classList.add('img-filters__button--active');
-  discussedFilterButton.disabled = true;
+function discussedFilterButtonClickHandler() {
+  initializeFilter(discussedFilterButton);
   getData(showUsersPhotosRanked);
 }
 
-function randomFilterButtonClickHandler (){
-  removeActiveButtonClass();
-  randomFilterButton.classList.add('img-filters__button--active');
-  randomFilterButton.disabled = true;
+function randomFilterButtonClickHandler() {
+  initializeFilter(randomFilterButton);
   getData(showUsersPhotosShuffle);
 }
 
-function showUsersPhotosRanked(photos) {
-  const rankedPhotos = photos.slice().sort(comparePhotos);
-  showUsersPhotosThumbnails(rankedPhotos);
-
-}
-
-function showUsersPhotosShuffle(photos) {
-  const usersPhotos = photos.slice();
-  const rankedPhotos = shufflePhotos(usersPhotos).slice(0, RANDOM_PHOTOS_COUNT);
-  showUsersPhotosThumbnails(rankedPhotos);
+function initializeFilter(filterButton) {
+  removeActiveButtonClass();
+  filterButton.classList.add('img-filters__button--active');
 }
 
 function removeActiveButtonClass() {
   for (let i = 0; i < filters.length; i++) {
 
-    if (filters[i].classList.contains('img-filters__button--active')||filters[i].disabled) {
+    if (filters[i].classList.contains('img-filters__button--active')) {
       filters[i].classList.remove('img-filters__button--active');
-      filters[i].disabled = false;
     }
   }
 }
 
-export { comparePhotos, defaultFilterClickHandler,discussedFilterButtonClickHandler, randomFilterButtonClickHandler };
+function showUsersPhotosRanked(photos) {
+  const rankedPhotos = photos.slice().sort(comparePhotos);
+  showUsersPhotosThumbnails(rankedPhotos);
+}
+
+function showUsersPhotosShuffle(photos) {
+  const usersPhotos = photos.slice();
+  const randomePhotos = shufflePhotos(usersPhotos).slice(0, RANDOM_PHOTOS_COUNT);
+  showUsersPhotosThumbnails(randomePhotos);
+}
+
+export { comparePhotos, defaultFilterClickHandler, discussedFilterButtonClickHandler, randomFilterButtonClickHandler };

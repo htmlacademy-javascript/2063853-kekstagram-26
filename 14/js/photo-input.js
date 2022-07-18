@@ -86,7 +86,6 @@ function isFocused () {
 
 //изменение масштаба фото
 biggerButton.addEventListener('click', biggerButtonClickHandler);
-
 smallerButton.addEventListener('click', smallerButtonClickHandler);
 
 //валидация
