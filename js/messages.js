@@ -1,5 +1,5 @@
 import { isEscapeKey } from './util.js';
-import {closeUploadPopup, addUploadPopoupKeydownEscHandler,removeUploadPopoupKeydownEscHandler } from './photo-input.js';
+import {closeUploadPopup, addDocumentFKeydownHandlerForUploadPopup,removeDocumentKeydownHandlerForUploadPopup } from './photo-input.js';
 
 const SUCCESS_MESSAGE = 'success';
 const ERROR_MESSAGE = 'error';
@@ -10,8 +10,8 @@ function showSuccessMessage() {
 
   document.body.appendChild(createMessage(SUCCESS_MESSAGE));
 
-  document.addEventListener('keydown', messageKeydownEscHandler);
-  document.addEventListener('click', outOfMessageClickHandler);
+  document.addEventListener('keydown', documentKeydownHandler);
+  document.addEventListener('click', documentClickHandler);
 }
 
 //функция срабатывает при ошибке загрузки фото
@@ -19,11 +19,11 @@ function showErrorMessage() {
   document.body.appendChild(createMessage(ERROR_MESSAGE));
 
   //добавила обработчики
-  document.addEventListener('keydown', messageKeydownEscHandler);
-  document.addEventListener('click', outOfMessageClickHandler);
+  document.addEventListener('keydown', documentKeydownHandler);
+  document.addEventListener('click', documentClickHandler);
 
   //удалила обработчик esc на попапе редактирования фото
-  removeUploadPopoupKeydownEscHandler();
+  removeDocumentKeydownHandlerForUploadPopup();
 }
 
 function createMessage(message) {
@@ -46,25 +46,25 @@ function closeMessageWindow() {
   const  messageWindow = document.querySelector('.message');
 
   if (messageWindow.classList.contains('error')) {
-    addUploadPopoupKeydownEscHandler();
+    addDocumentFKeydownHandlerForUploadPopup();
   }
 
   messageWindow.remove();
 
   //удаление обработчиков
-  document.removeEventListener('keydown', messageKeydownEscHandler);
-  document.removeEventListener('click', outOfMessageClickHandler);
+  document.removeEventListener('keydown', documentKeydownHandler);
+  document.removeEventListener('click', documentClickHandler);
 
 }
 
-function messageKeydownEscHandler(evt) {
+function documentKeydownHandler(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeMessageWindow();
   }
 }
 
-function outOfMessageClickHandler(evt) {
+function documentClickHandler(evt) {
   if (evt.target.classList.contains('message')) {
     evt.preventDefault();
     closeMessageWindow();

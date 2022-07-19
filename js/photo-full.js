@@ -16,7 +16,7 @@ function thumbnailClickHandler(photo) {
   document.body.classList.add('modal-open');
 
   //добавление обработчика по нажатию эскейп
-  document.addEventListener('keydown', keydownEscHandler);
+  document.addEventListener('keydown', documentKeydownHandler);
 
   document.body.appendChild(photoFull);
 }
@@ -33,6 +33,7 @@ function createPhotoFull ({url, like, comments, description}) {
   const commentsList = photoFull.querySelector('.social__comments');
   const commentsLoaderButton = photoFull.querySelector('.social__comments-loader');
   let shownCommentsNum = Math.min(COMMENTS_INCREMENT, comments.length);
+
   photoFull.querySelector('.comments-count-shown').textContent = shownCommentsNum;//записать изначальное количество показанных комментов в счетчик
 
   commentsList.innerHTML = '';//удалить комментарии, которые уже были в разметке
@@ -92,12 +93,12 @@ function closeButtonClickHandler() {
     document.body.classList.remove('modal-open');
 
     //удаление обработчика на эскейп
-    document.removeEventListener('keydown', keydownEscHandler);
+    document.removeEventListener('keydown', documentKeydownHandler);
   }
 }
 
 //закрытие фото по клавише esc
-function keydownEscHandler(evt, photo) {
+function documentKeydownHandler(evt, photo) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeButtonClickHandler(photo);

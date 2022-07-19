@@ -44,7 +44,7 @@ function uploadButtonClickHandler() {
   resetEffects();
 
   //добавление обработчика на эскейп
-  addUploadPopoupKeydownEscHandler();
+  addDocumentFKeydownHandlerForUploadPopup();
 }
 
 //подстановка пользовательского фото для загрузки
@@ -72,18 +72,18 @@ function closeUploadPopup() {
   uploadForm.reset();
 
   //удаление обработчика на эскейп
-  removeUploadPopoupKeydownEscHandler();
+  removeDocumentKeydownHandlerForUploadPopup();
 }
 
-function addUploadPopoupKeydownEscHandler() {
-  document.addEventListener('keydown', uploadPopupKeydownEscHandler);
+function addDocumentFKeydownHandlerForUploadPopup() {
+  document.addEventListener('keydown', documentKeydownHandler);
 }
 
-function removeUploadPopoupKeydownEscHandler() {
-  document.removeEventListener('keydown', uploadPopupKeydownEscHandler);
+function removeDocumentKeydownHandlerForUploadPopup() {
+  document.removeEventListener('keydown', documentKeydownHandler);
 }
 
-function uploadPopupKeydownEscHandler(evt) {
+function documentKeydownHandler(evt) {
   if (isEscapeKey(evt) && !isFocused()) {
     evt.preventDefault();
     closeUploadPopup();
@@ -175,4 +175,4 @@ function unblockSubmitButton() {
   submitButton.textContent = 'Опубликовать';
 }
 
-export { downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler, uploadButtonClickHandler };
+export { downloadPhoto, closeUploadPopup, addDocumentFKeydownHandlerForUploadPopup, removeDocumentKeydownHandlerForUploadPopup };
