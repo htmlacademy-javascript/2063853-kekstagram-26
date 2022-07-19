@@ -1,8 +1,9 @@
 import { isEscapeKey } from './util.js';
 
+const COMMENTS_INCREMENT = 5;
+
 const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
 const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
-const COMMENTS_INCREMENT = 5;
 
 //механизм открытия полноразмерного фото
 function thumbnailClickHandler(photo) {

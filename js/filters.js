@@ -2,12 +2,12 @@ import { getData } from './api.js';
 import { showUsersPhotosThumbnails } from './thumbnails.js';
 import { comparePhotos, shufflePhotos } from './util.js';
 
+const RANDOM_PHOTOS_COUNT = 10;
+
 const defaultFilterButton = document.querySelector('#filter-default');
 const randomFilterButton = document.querySelector('#filter-random');
 const discussedFilterButton = document.querySelector('#filter-discussed');
 const filters = document.querySelectorAll('.img-filters__button');
-const RANDOM_PHOTOS_COUNT = 10;
-
 
 function defaultFilterClickHandler() {
   initializeFilter(defaultFilterButton);

@@ -8,7 +8,7 @@ const effect = {
   marvin: buildEffect('marvin', 0, 100, 1, 'invert', '%'),
   heat: buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
 };
-const EFFECT_NONE = effect.none;
+const effectNone = effect.none;
 let currentEffect = effect.none;
 //слайдер
 const sliderElement = document.querySelector('.effect-level__slider');
@@ -82,7 +82,7 @@ function applyEffectToPhotoPreview(effectValue) {
     imagePreview.classList.add(effectClassName);
   }
 
-  if (currentEffect === EFFECT_NONE) {
+  if (currentEffect === effectNone) {
     imagePreview.style.filter = '';
   } else {
     imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
@@ -90,7 +90,7 @@ function applyEffectToPhotoPreview(effectValue) {
 }
 
 function resetEffects() {
-  updateSlider(EFFECT_NONE);
+  updateSlider(effectNone);
   imagePreview.className = '';
   imagePreview.style.filter = '';
 }
