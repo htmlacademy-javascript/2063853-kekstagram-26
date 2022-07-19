@@ -1,32 +1,28 @@
 import { isEscapeKey } from './util.js';
-import {closeUploadPopup, addUploadPopoupKeydownEscHandler,removeUploadPopoupKeydownEscHandler } from './photo-input.js';
+import {closeUploadPopup, addDocumentFKeydownHandlerForUploadPopup,removeDocumentKeydownHandlerForUploadPopup } from './photo-input.js';
 
 const SUCCESS_MESSAGE = 'success';
 const ERROR_MESSAGE = 'error';
 
-//функция срабатывает при успешной загрузке фото
-function showSuccessMessage() {
-  closeUploadPopup();
+const closeMessageWindow = () => {
+  const  messageWindow = document.querySelector('.message');
 
-  document.body.appendChild(createMessage(SUCCESS_MESSAGE));
+  if (messageWindow.classList.contains('error')) {
+    addDocumentFKeydownHandlerForUploadPopup();
+  }
 
-  document.addEventListener('keydown', messageKeydownEscHandler);
-  document.addEventListener('click', outOfMessageClickHandler);
-}
+  messageWindow.remove();
 
-//функция срабатывает при ошибке загрузки фото
-function showErrorMessage() {
-  document.body.appendChild(createMessage(ERROR_MESSAGE));
+  //удаление обработчиков
+  document.removeEventListener('keydown', documentKeydownHandler);
+  document.removeEventListener('click', documentClickHandler);
+};
 
-  //добавила обработчики
-  document.addEventListener('keydown', messageKeydownEscHandler);
-  document.addEventListener('click', outOfMessageClickHandler);
+const buttonCloseClickHandler = (message) => {
+  closeMessageWindow(message);
+};
 
-  //удалила обработчик esc на попапе редактирования фото
-  removeUploadPopoupKeydownEscHandler();
-}
-
-function createMessage(message) {
+const createMessage = (message) => {
   const messageTemplate = document.querySelector(`#${message}`).content.querySelector(`.${message}`);
   const messageWindow = messageTemplate.cloneNode(true);
 
@@ -36,35 +32,38 @@ function createMessage(message) {
   buttonClose.addEventListener('click', buttonCloseClickHandler);
 
   return messageWindow;
-}
+};
 
-function buttonCloseClickHandler(message){
-  closeMessageWindow(message);
-}
+//функция срабатывает при успешной загрузке фото
+const showSuccessMessage = () => {
+  closeUploadPopup();
 
-function closeMessageWindow() {
-  const  messageWindow = document.querySelector('.message');
+  document.body.appendChild(createMessage(SUCCESS_MESSAGE));
 
-  if (messageWindow.classList.contains('error')) {
-    addUploadPopoupKeydownEscHandler();
-  }
+  document.addEventListener('keydown', documentKeydownHandler);
+  document.addEventListener('click', documentClickHandler);
+};
 
-  messageWindow.remove();
+//функция срабатывает при ошибке загрузки фото
+const showErrorMessage = () => {
+  document.body.appendChild(createMessage(ERROR_MESSAGE));
 
-  //удаление обработчиков
-  document.removeEventListener('keydown', messageKeydownEscHandler);
-  document.removeEventListener('click', outOfMessageClickHandler);
+  //добавила обработчики
+  document.addEventListener('keydown', documentKeydownHandler);
+  document.addEventListener('click', documentClickHandler);
 
-}
+  //удалила обработчик esc на попапе редактирования фото
+  removeDocumentKeydownHandlerForUploadPopup();
+};
 
-function messageKeydownEscHandler(evt) {
+function documentKeydownHandler(evt) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeMessageWindow();
   }
 }
 
-function outOfMessageClickHandler(evt) {
+function documentClickHandler(evt) {
   if (evt.target.classList.contains('message')) {
     evt.preventDefault();
     closeMessageWindow();

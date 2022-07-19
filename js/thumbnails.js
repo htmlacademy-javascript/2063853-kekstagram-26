@@ -1,58 +1,49 @@
 import { thumbnailClickHandler } from './photo-full.js';
+import { defaultFilterClickHandler,discussedFilterButtonClickHandler, randomFilterButtonClickHandler } from './filters.js';
+import { debounce } from './util.js';
 
 const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 const thumbnailsList = document.querySelector('.pictures');
 const filtersContainer = document.querySelector('.img-filters');
-let loadedImagesCounter = 0;
+const randomFilterButton = document.querySelector('#filter-random');
+const discussedFilterButton = document.querySelector('#filter-discussed');
+const defaultFilterButton = document.querySelector('#filter-default');
 
-//функция отрисовывает миниатюры
-function showUsersPhotosThumbnails(thumbnails) {
-  thumbnailsList.querySelectorAll('.picture').forEach((thumbnail) => thumbnail.remove());
-  resetLoadedImagesCouter();
-
-  const thumbnailsListFragment = document.createDocumentFragment();
-  thumbnails.forEach((thumbnail) => createThumbnailsFragment(thumbnail, thumbnailsListFragment));
-  thumbnailsList.appendChild(thumbnailsListFragment);
-
-  //показ блока с фильтрами после загрузки всех миниатюр
-  thumbnailsList.querySelectorAll('.picture img').forEach((img) => {
-    if(img.complete) {
-      incrementLoadedImagesCounter(thumbnails.length);
-    }
-    else {
-      img.addEventListener( 'load', () => incrementLoadedImagesCounter(thumbnails.length), false );
-    }
-  });
-}
-
-//сколько фото уже загружено
-function incrementLoadedImagesCounter(totalImagesNumber) {
-  loadedImagesCounter ++;
-  if ( loadedImagesCounter === totalImagesNumber ) {
-    filtersContainer.classList.remove('img-filters--inactive');
-  }
-}
-
-function resetLoadedImagesCouter() {
-  loadedImagesCounter = 0;
-}
-
-//на каждую миниатюру добавим обработчик события по клику и соберем их в фрагмент
-function createThumbnailsFragment(photo, thumbnailsListFragment) {
-  const thumbnail = createThumbnail(photo);
-
-  thumbnail.addEventListener('click', () => thumbnailClickHandler(photo));
-
-  thumbnailsListFragment.appendChild(thumbnail);
-}
-
-function createThumbnail ({url, likes, comments}) {
+const createThumbnail = ({url, likes, comments}) => {
   const thumbnail = photoTemplate.cloneNode(true);
   thumbnail.querySelector('.picture__img').src = url;
   thumbnail.querySelector('.picture__comments').textContent = comments.length;
   thumbnail.querySelector('.picture__likes').textContent = likes;
 
   return thumbnail;
-}
+};
+
+//на каждую миниатюру добавим обработчик события по клику и соберем их в фрагмент
+const createThumbnailsFragment = (photo, thumbnailsListFragment) => {
+  const thumbnail = createThumbnail(photo);
+
+  thumbnail.addEventListener('click', () => thumbnailClickHandler(photo));
+
+  thumbnailsListFragment.appendChild(thumbnail);
+};
+
+//функция отрисовывает миниатюры
+const showUsersPhotosThumbnails = (thumbnails) => {
+  thumbnailsList.querySelectorAll('.picture').forEach((thumbnail) => thumbnail.remove());
+
+  const thumbnailsListFragment = document.createDocumentFragment();
+  thumbnails.forEach((thumbnail) => createThumbnailsFragment(thumbnail, thumbnailsListFragment));
+  thumbnailsList.appendChild(thumbnailsListFragment);
+
+  if (filtersContainer.classList.contains('img-filters--inactive')) {
+    //показ блока с фильтрами после загрузки всех миниатюр
+    filtersContainer.classList.remove('img-filters--inactive');
+
+    //добавить обработчики на кнопки фильтров
+    defaultFilterButton.addEventListener('click', debounce(defaultFilterClickHandler));
+    discussedFilterButton.addEventListener('click', debounce(discussedFilterButtonClickHandler));
+    randomFilterButton.addEventListener('click', debounce(randomFilterButtonClickHandler));
+  }
+};
 
 export {showUsersPhotosThumbnails};

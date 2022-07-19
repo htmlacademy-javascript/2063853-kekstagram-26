@@ -3,6 +3,13 @@ import { resetEffects } from './photo-effects.js';
 import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler } from './photo-scale.js';
 import { sendData } from './api.js';
 import { showErrorMessage } from './messages.js';
+import { effectButtonChangeHandler } from './photo-effects.js';
+
+const HASHTAG_MIN = 2;
+const HASHTAG_MAX = 20;
+const HASHTAGS_MAX = 5;
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const ALLERT_MESSAGE = 'Выберите файл с расширением jpg, jpeg или png';
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
@@ -14,31 +21,43 @@ const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
 const submitButton = document.querySelector('#upload-submit');
 const photoPreview = document.querySelector('.img-upload__preview img');
-const HASHTAG_MIN = 2;
-const HASHTAG_MAX = 20;
-const HASHTAGS_MAX = 5;
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const effectButtonsList = document.querySelector('.effects__list');
 
-uploadButton.addEventListener('change', () => uploadButtonClickHandler());
+const errorMessage = {
+  BAD_COUNT: 'Нельзя указать больше пяти хэш-тегов',
+  BAD_LENGTH: 'Длина одного хэш-тега от 2 до 20 символов, включая решётку',
+  BAD_REPEAT: 'Один и тот же хэш-тег не может быть использован дважды',
+  BAD_VALUE: 'Хэш-тег состоит из букв и чисел',
+  BAD_START: 'Хэш-тег начинается с символа # (решётка)'
+};
 
-uploadPopupCancelButton.addEventListener('click', () => uploadPopupCancelButtonClickHandler());
+// в фокусе ли поле
+const isFocused = () => document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 
-function uploadButtonClickHandler() {
-  uploadPopup.classList.remove ('hidden');
-  document.body.classList.add('modal-open');
+const addDocumentFKeydownHandlerForUploadPopup = () => {
+  document.addEventListener('keydown', documentKeydownHandler);
+};
 
-  choseUsersPhoto();
+const removeDocumentKeydownHandlerForUploadPopup = () => {
+  document.removeEventListener('keydown', documentKeydownHandler);
+};
 
-  //установка масштаба и стиля фото по - умолчанию
-  initializeCurrentScaleValue();
-  resetEffects();
+const closeUploadPopup = () => {
+  uploadPopup.classList.add('hidden');
+  document.body.classList.remove('modal-open');
 
-  //добавление обработчика на эскейп
-  addUploadPopoupKeydownEscHandler();
-}
+  //очистка формы
+  uploadForm.reset();
+
+  //удаление обработчика на кнопках эффектов
+  effectButtonsList.removeEventListener('change', effectButtonChangeHandler);
+
+  //удаление обработчика на эскейп
+  removeDocumentKeydownHandlerForUploadPopup();
+};
 
 //подстановка пользовательского фото для загрузки
-function choseUsersPhoto() {
+const choseUsersPhoto = () => {
   const file = uploadButton.files[0];
   const fileName = file.name.toLowerCase();
 
@@ -46,42 +65,40 @@ function choseUsersPhoto() {
 
   if (matches) {
     photoPreview.src = URL.createObjectURL(file);
-  }
-  showAlert('Выберите файл с расширением jpg, jpeg или png');
-}
+  } else {
+    showAlert(ALLERT_MESSAGE);}
+};
 
-function uploadPopupCancelButtonClickHandler() {
+const uploadButtonClickHandler = () => {
+  uploadPopup.classList.remove ('hidden');
+  document.body.classList.add('modal-open');
+
+  choseUsersPhoto();
+
+  //добавление обработчика на кнопки эффектов при помощи всплытия
+  effectButtonsList.addEventListener('change', effectButtonChangeHandler);
+
+  //установка масштаба и стиля фото по - умолчанию
+  initializeCurrentScaleValue();
+  resetEffects();
+
+  //добавление обработчика на эскейп
+  addDocumentFKeydownHandlerForUploadPopup();
+};
+
+const uploadPopupCancelButtonClickHandler = () => {
   closeUploadPopup();
-}
+};
 
-function closeUploadPopup() {
-  uploadPopup.classList.add('hidden');
-  document.body.classList.remove('modal-open');
+uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
-  //очистка формы
-  uploadForm.reset();
+uploadPopupCancelButton.addEventListener('click', () => uploadPopupCancelButtonClickHandler());
 
-  //удаление обработчика на эскейп
-  removeUploadPopoupKeydownEscHandler();
-}
-
-function addUploadPopoupKeydownEscHandler() {
-  document.addEventListener('keydown', uploadPopupKeydownEscHandler);
-}
-
-function removeUploadPopoupKeydownEscHandler() {
-  document.removeEventListener('keydown', uploadPopupKeydownEscHandler);
-}
-
-function uploadPopupKeydownEscHandler(evt) {
+function documentKeydownHandler(evt) {
   if (isEscapeKey(evt) && !isFocused()) {
     evt.preventDefault();
     closeUploadPopup();
   }
-}
-
-function isFocused () {
-  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 }
 
 //изменение масштаба фото
@@ -97,42 +114,41 @@ const pristine = new Pristine(uploadForm, {
 //сброс ошибок валидации
 uploadForm.addEventListener('reset', () => pristine.reset());
 
-function createHashtagsArray(value) {
-  return value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
-}
+const createHashtagsArray = (value) => value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
 
-function validateHashtagsNumber(value) {
-  return createHashtagsArray(value).length <= HASHTAGS_MAX;
-}
+const validateHashtagsNumber = (value) => createHashtagsArray(value).length <= HASHTAGS_MAX;
 
-pristine.addValidator(hashtagsFild, validateHashtagsNumber, 'Нельзя указать больше пяти хэш-тегов');
+pristine.addValidator(hashtagsFild, validateHashtagsNumber, errorMessage.BAD_COUNT);
 
-function validateHashtagsLength(value) {
-  return value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
-}
+const validateHashtagsLength = (value) => value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
 
-pristine.addValidator(hashtagsFild, validateHashtagsLength, 'Длина одного хэш-тега от 2 до 20 символов, включая решётку');
+pristine.addValidator(hashtagsFild, validateHashtagsLength, errorMessage.BAD_LENGTH);
 
-function validateHashtagsUnique(value) {
-  return createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
-}
+const validateHashtagsUnique = (value) => createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
 
-pristine.addValidator(hashtagsFild, validateHashtagsUnique, 'Один и тот же хэш-тег не может быть использован дважды');
+pristine.addValidator(hashtagsFild, validateHashtagsUnique, errorMessage.BAD_REPEAT);
 
-function validateFirstSymbol(value) {
-  return createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
-}
+const validateFirstSymbol = (value) => createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
 
-pristine.addValidator(hashtagsFild, validateFirstSymbol, 'Хэш-тег начинается с символа # (решётка)');
+pristine.addValidator(hashtagsFild, validateFirstSymbol, errorMessage.BAD_START);
 
-function validateAllSymbols (value) {
-  return createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
-}
+const validateAllSymbols = (value) => createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
 
-pristine.addValidator(hashtagsFild, validateAllSymbols, 'Хэш-тег состоит из букв и чисел');
+pristine.addValidator(hashtagsFild, validateAllSymbols, errorMessage.BAD_VALUE);
+
+//блокировка клавиши опубликовать на время обращения к серверу
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Публикация...';
+};
+
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+};
 
 //загрузка фото после валидации
-function downloadPhoto (onSuccess) {
+const downloadPhoto = (onSuccess) => {
   uploadForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -152,17 +168,6 @@ function downloadPhoto (onSuccess) {
       );
     }
   });
-}
+};
 
-//блокировка клавиши опубликовать на время обращения к серверу
-function blockSubmitButton() {
-  submitButton.disabled = true;
-  submitButton.textContent = 'Публикация...';
-}
-
-function unblockSubmitButton() {
-  submitButton.disabled = false;
-  submitButton.textContent = 'Опубликовать';
-}
-
-export { downloadPhoto, closeUploadPopup, addUploadPopoupKeydownEscHandler, removeUploadPopoupKeydownEscHandler, uploadButtonClickHandler };
+export { downloadPhoto, closeUploadPopup, addDocumentFKeydownHandlerForUploadPopup, removeDocumentKeydownHandlerForUploadPopup };

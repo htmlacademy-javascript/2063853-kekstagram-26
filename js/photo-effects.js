@@ -8,12 +8,13 @@ const effect = {
   marvin: buildEffect('marvin', 0, 100, 1, 'invert', '%'),
   heat: buildEffect('heat', 1, 3, 0.1, 'brightness', ''),
 };
-const EFFECT_NONE = effect.none;
+const effectNone = effect.none;
 let currentEffect = effect.none;
 //слайдер
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectLevelValue = document.querySelector('.effect-level__value');
-const effectButtonsList = document.querySelector('.effects__list');
+const sliderElementContainer = document.querySelector('.img-upload__effect-level');
+
 
 //функция - создатель объекта для каждого эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
@@ -27,18 +28,6 @@ function buildEffect(name, min, max, step, cssStyle, cssUnit) {
   };
 }
 
-//применение эффекта при клике на кнопку эффекта
-effectButtonsList.addEventListener('change', effectButtonChangeHandler);
-
-function effectButtonChangeHandler (event) {
-  const targetEffectButton = event.target;
-
-  currentEffect = effect[targetEffectButton.value];
-
-  updateSlider(currentEffect);
-  applyEffectToPhotoPreview(currentEffect.max);
-}
-
 //создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
@@ -50,18 +39,12 @@ noUiSlider.create(sliderElement, {
   connect: 'lower',
 });
 
-//запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
-sliderElement.noUiSlider.on('update', () => {
-  effectLevelValue.value = sliderElement.noUiSlider.get();
-  applyEffectToPhotoPreview(effectLevelValue.value);
-});
-
 //обновление слайдера в зависимости от выбранного эффекта
-function updateSlider(filter) {
+const updateSlider = (filter) => {
   if (filter.name === 'none') {
-    sliderElement.classList.add('hidden');
+    sliderElementContainer.classList.add('hidden');
   } else {
-    sliderElement.classList.remove('hidden');
+    sliderElementContainer.classList.remove('hidden');
     sliderElement.noUiSlider.updateOptions({
       range: {
         min: filter.min,
@@ -71,10 +54,10 @@ function updateSlider(filter) {
       step: filter.step
     });
   }
-}
+};
 
 //применение эффекта на фото
-function applyEffectToPhotoPreview(effectValue) {
+const applyEffectToPhotoPreview = (effectValue) => {
   const effectClassName = `effects__preview--${currentEffect.name}`;
 
   if (!imagePreview.classList.contains(effectClassName)) {
@@ -82,17 +65,28 @@ function applyEffectToPhotoPreview(effectValue) {
     imagePreview.classList.add(effectClassName);
   }
 
-  if (currentEffect === EFFECT_NONE) {
-    imagePreview.style.filter = '';
-  } else {
-    imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
-  }
-}
+  imagePreview.style.filter = (currentEffect === effectNone) ? '' : `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
+};
 
-function resetEffects() {
-  updateSlider(EFFECT_NONE);
+//запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
+sliderElement.noUiSlider.on('update', () => {
+  effectLevelValue.value = sliderElement.noUiSlider.get();
+  applyEffectToPhotoPreview(effectLevelValue.value);
+});
+
+const effectButtonChangeHandler = (event) => {
+  const targetEffectButton = event.target;
+
+  currentEffect = effect[targetEffectButton.value];
+
+  updateSlider(currentEffect);
+  applyEffectToPhotoPreview(currentEffect.max);
+};
+
+const resetEffects = () => {
+  updateSlider(effectNone);
   imagePreview.className = '';
   imagePreview.style.filter = '';
-}
+};
 
-export { resetEffects };
+export { resetEffects, effectButtonChangeHandler };

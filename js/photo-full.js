@@ -1,27 +1,40 @@
 import { isEscapeKey } from './util.js';
 
-const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
-const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
 const COMMENTS_INCREMENT = 5;
 
-//механизм открытия полноразмерного фото
-function thumbnailClickHandler(photo) {
-  const photoFull = createPhotoFull(photo); //рисуем большое фото
+const fullPhotoTemplate = document.querySelector('#big-picture').content.querySelector('.big-picture');
+const commentTemplate = fullPhotoTemplate.querySelector('.social__comment');
 
-  //открытие фото
-  photoFull.classList.remove('hidden');
+// создание комментария
+const createUsersComment = ({avatar, name, message}) => {
+  const usersComment = commentTemplate.cloneNode(true);
 
-  //чтобы контейнер с фотографиями позади не прокручивался при скролле
-  document.body.classList.add('modal-open');
+  const socialPicture = usersComment.querySelector('.social__picture');
+  socialPicture.src = avatar;
+  socialPicture.alt = name;
+  socialPicture.width = '35';
+  socialPicture.height = '35';
 
-  //добавление обработчика по нажатию эскейп
-  document.addEventListener('keydown', keydownEscHandler);
+  usersComment.querySelector('.social__text').textContent = message;
 
-  document.body.appendChild(photoFull);
-}
+  return usersComment;
+};
+
+//закрытие большого фото
+const closeButtonClickHandler = () => {
+  const photoFull = document.querySelector('.big-picture:not(.hidden)');
+
+  if (photoFull) {
+    photoFull.remove();
+    document.body.classList.remove('modal-open');
+
+    //удаление обработчика на эскейп
+    document.removeEventListener('keydown', documentKeydownHandler);
+  }
+};
 
 //создание карточки большого фото
-function createPhotoFull ({url, like, comments, description}) {
+const createPhotoFull = ({url, like, comments, description}) => {
   const photoFull = fullPhotoTemplate.cloneNode(true);
   photoFull.querySelector('img').src = url;
   photoFull.querySelector('.likes-count').textContent = like;
@@ -32,6 +45,8 @@ function createPhotoFull ({url, like, comments, description}) {
   const commentsList = photoFull.querySelector('.social__comments');
   const commentsLoaderButton = photoFull.querySelector('.social__comments-loader');
   let shownCommentsNum = Math.min(COMMENTS_INCREMENT, comments.length);
+
+  photoFull.querySelector('.comments-count-shown').textContent = shownCommentsNum;//записать изначальное количество показанных комментов в счетчик
 
   commentsList.innerHTML = '';//удалить комментарии, которые уже были в разметке
 
@@ -47,8 +62,8 @@ function createPhotoFull ({url, like, comments, description}) {
     commentsLoaderButton.classList.add ('hidden');
   }
 
-  //добавляем обработчик на кнопку подгрузки комментариев
-  commentsLoaderButton.addEventListener('click', () => {
+  //создаем обработчик для кнопки подгрузки комментариев
+  const commentsLoaderButtonClickHandler = () => {
     for (let i = shownCommentsNum; i < Math.min(shownCommentsNum + COMMENTS_INCREMENT, comments.length); i++) {
       commentsList.appendChild(createUsersComment(comments[i]));
     }
@@ -57,45 +72,37 @@ function createPhotoFull ({url, like, comments, description}) {
 
     if (shownCommentsNum === comments.length) {
       commentsLoaderButton.classList.add ('hidden');
+
+      commentsLoaderButton.removeEventListener('click', commentsLoaderButtonClickHandler);//удаление слушателя
     }
-  });
+  };
+
+  commentsLoaderButton.addEventListener('click', commentsLoaderButtonClickHandler);
 
   //добавляем обработчик на кнопку закрытия фото
   photoFull.querySelector('.big-picture__cancel').addEventListener('click', () => closeButtonClickHandler(photoFull));
 
   return photoFull;
-}
+};
 
-// создание комментария
-function createUsersComment ({avatar, name, message}) {
-  const usersComment = commentTemplate.cloneNode(true);
+//механизм открытия полноразмерного фото
+const thumbnailClickHandler = (photo) => {
+  const photoFull = createPhotoFull(photo); //рисуем большое фото
 
-  const socialPicture = usersComment.querySelector('.social__picture');
-  socialPicture.src = avatar;
-  socialPicture.alt = name;
-  socialPicture.width = '35';
-  socialPicture.height = '35';
+  //открытие фото
+  photoFull.classList.remove('hidden');
 
-  usersComment.querySelector('.social__text').textContent = message;
+  //чтобы контейнер с фотографиями позади не прокручивался при скролле
+  document.body.classList.add('modal-open');
 
-  return usersComment;
-}
+  //добавление обработчика по нажатию эскейп
+  document.addEventListener('keydown', documentKeydownHandler);
 
-//закрытие большого фото
-function closeButtonClickHandler() {
-  const photoFull = document.querySelector('.big-picture:not(.hidden)');
-
-  if (photoFull) {
-    photoFull.remove();
-    document.body.classList.remove('modal-open');
-
-    //удаление обработчика на эскейп
-    document.removeEventListener('keydown', keydownEscHandler);
-  }
-}
+  document.body.appendChild(photoFull);
+};
 
 //закрытие фото по клавише esc
-function keydownEscHandler(evt, photo) {
+function documentKeydownHandler (evt, photo) {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeButtonClickHandler(photo);
