@@ -13,6 +13,8 @@ let currentEffect = effect.none;
 //слайдер
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectLevelValue = document.querySelector('.effect-level__value');
+const sliderElementContainer = document.querySelector('.img-upload__effect-level');
+
 
 //функция - создатель объекта для каждого эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
@@ -40,9 +42,9 @@ noUiSlider.create(sliderElement, {
 //обновление слайдера в зависимости от выбранного эффекта
 const updateSlider = (filter) => {
   if (filter.name === 'none') {
-    sliderElement.classList.add('hidden');
+    sliderElementContainer.classList.add('hidden');
   } else {
-    sliderElement.classList.remove('hidden');
+    sliderElementContainer.classList.remove('hidden');
     sliderElement.noUiSlider.updateOptions({
       range: {
         min: filter.min,
