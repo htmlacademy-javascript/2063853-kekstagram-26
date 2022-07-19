@@ -4,7 +4,7 @@ const ALLERT_MESSAGE = 'Не удалось загрузить данные. О�
 const DATA_SERVER = 'https://26.javascript.pages.academy/kekstagram/data';
 const SEND_SERVER = 'https://26.javascript.pages.academy/kekstagram';
 
-function getData (onSuccess) {
+const getData = (onSuccess) => {
   fetch(DATA_SERVER)
     .then((response) => {
       if (response.ok) {
@@ -14,9 +14,9 @@ function getData (onSuccess) {
     })
     .then(onSuccess)
     .catch((error) => showAlert(error.message) );
-}
+};
 
-function sendData(onSuccess, onFail, body) {
+const sendData = (onSuccess, onFail, body) => {
   fetch(
     SEND_SERVER,
     {
@@ -32,6 +32,6 @@ function sendData(onSuccess, onFail, body) {
       }
     })
     .catch(() => onFail());
-}
+};
 
 export{ getData, sendData };

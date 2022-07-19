@@ -27,18 +27,6 @@ function buildEffect(name, min, max, step, cssStyle, cssUnit) {
   };
 }
 
-//применение эффекта при клике на кнопку эффекта
-effectButtonsList.addEventListener('change', effectButtonChangeHandler);
-
-function effectButtonChangeHandler (event) {
-  const targetEffectButton = event.target;
-
-  currentEffect = effect[targetEffectButton.value];
-
-  updateSlider(currentEffect);
-  applyEffectToPhotoPreview(currentEffect.max);
-}
-
 //создание слайдера
 noUiSlider.create(sliderElement, {
   range: {
@@ -50,14 +38,8 @@ noUiSlider.create(sliderElement, {
   connect: 'lower',
 });
 
-//запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
-sliderElement.noUiSlider.on('update', () => {
-  effectLevelValue.value = sliderElement.noUiSlider.get();
-  applyEffectToPhotoPreview(effectLevelValue.value);
-});
-
 //обновление слайдера в зависимости от выбранного эффекта
-function updateSlider(filter) {
+const updateSlider = (filter) => {
   if (filter.name === 'none') {
     sliderElement.classList.add('hidden');
   } else {
@@ -71,10 +53,10 @@ function updateSlider(filter) {
       step: filter.step
     });
   }
-}
+};
 
 //применение эффекта на фото
-function applyEffectToPhotoPreview(effectValue) {
+const applyEffectToPhotoPreview = (effectValue) => {
   const effectClassName = `effects__preview--${currentEffect.name}`;
 
   if (!imagePreview.classList.contains(effectClassName)) {
@@ -87,12 +69,30 @@ function applyEffectToPhotoPreview(effectValue) {
   } else {
     imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
   }
-}
+};
 
-function resetEffects() {
+//запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
+sliderElement.noUiSlider.on('update', () => {
+  effectLevelValue.value = sliderElement.noUiSlider.get();
+  applyEffectToPhotoPreview(effectLevelValue.value);
+});
+
+const effectButtonChangeHandler = (event) => {
+  const targetEffectButton = event.target;
+
+  currentEffect = effect[targetEffectButton.value];
+
+  updateSlider(currentEffect);
+  applyEffectToPhotoPreview(currentEffect.max);
+};
+
+//применение эффекта при клике на кнопку эффекта
+effectButtonsList.addEventListener('change', effectButtonChangeHandler);
+
+const resetEffects = () => {
   updateSlider(effectNone);
   imagePreview.className = '';
   imagePreview.style.filter = '';
-}
+};
 
 export { resetEffects };

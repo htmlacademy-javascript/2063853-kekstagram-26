@@ -9,44 +9,45 @@ const randomFilterButton = document.querySelector('#filter-random');
 const discussedFilterButton = document.querySelector('#filter-discussed');
 const filters = document.querySelectorAll('.img-filters__button');
 
-function defaultFilterClickHandler() {
-  initializeFilter(defaultFilterButton);
-  getData(showUsersPhotosThumbnails);
-}
 
-function discussedFilterButtonClickHandler() {
-  initializeFilter(discussedFilterButton);
-  getData(showUsersPhotosRanked);
-}
-
-function randomFilterButtonClickHandler() {
-  initializeFilter(randomFilterButton);
-  getData(showUsersPhotosShuffle);
-}
-
-function initializeFilter(filterButton) {
-  removeActiveButtonClass();
-  filterButton.classList.add('img-filters__button--active');
-}
-
-function removeActiveButtonClass() {
+const removeActiveButtonClass = () => {
   for (let i = 0; i < filters.length; i++) {
 
     if (filters[i].classList.contains('img-filters__button--active')) {
       filters[i].classList.remove('img-filters__button--active');
     }
   }
-}
+};
 
-function showUsersPhotosRanked(photos) {
+const showUsersPhotosRanked = (photos) => {
   const rankedPhotos = photos.slice().sort(comparePhotos);
   showUsersPhotosThumbnails(rankedPhotos);
-}
+};
 
-function showUsersPhotosShuffle(photos) {
+const showUsersPhotosShuffle = (photos) => {
   const usersPhotos = photos.slice();
   const randomePhotos = shufflePhotos(usersPhotos).slice(0, RANDOM_PHOTOS_COUNT);
   showUsersPhotosThumbnails(randomePhotos);
-}
+};
+
+const initializeFilter = (filterButton) => {
+  removeActiveButtonClass();
+  filterButton.classList.add('img-filters__button--active');
+};
+
+const defaultFilterClickHandler = () => {
+  initializeFilter(defaultFilterButton);
+  getData(showUsersPhotosThumbnails);
+};
+
+const randomFilterButtonClickHandler = () => {
+  initializeFilter(randomFilterButton);
+  getData(showUsersPhotosShuffle);
+};
+
+const discussedFilterButtonClickHandler = () => {
+  initializeFilter(discussedFilterButton);
+  getData(showUsersPhotosRanked);
+};
 
 export { comparePhotos, defaultFilterClickHandler, discussedFilterButtonClickHandler, randomFilterButtonClickHandler };

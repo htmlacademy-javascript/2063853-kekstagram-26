@@ -29,11 +29,41 @@ const errorMessage = {
   BAD_START: 'Хэш-тег начинается с символа # (решётка)'
 };
 
-uploadButton.addEventListener('change', () => uploadButtonClickHandler());
+// в фокусе ли поле
+const isFocused = () => document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 
-uploadPopupCancelButton.addEventListener('click', () => uploadPopupCancelButtonClickHandler());
+const addDocumentFKeydownHandlerForUploadPopup = () => {
+  document.addEventListener('keydown', documentKeydownHandler);
+};
 
-function uploadButtonClickHandler() {
+const removeDocumentKeydownHandlerForUploadPopup = () => {
+  document.removeEventListener('keydown', documentKeydownHandler);
+};
+
+const closeUploadPopup = () => {
+  uploadPopup.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+
+  //очистка формы
+  uploadForm.reset();
+
+  //удаление обработчика на эскейп
+  removeDocumentKeydownHandlerForUploadPopup();
+};
+
+//подстановка пользовательского фото для загрузки
+const choseUsersPhoto = () => {
+  const file = uploadButton.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    photoPreview.src = URL.createObjectURL(file);
+  } else {
+    showAlert(ALLERT_MESSAGE);}
+};
+const uploadButtonClickHandler = () => {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
@@ -45,53 +75,21 @@ function uploadButtonClickHandler() {
 
   //добавление обработчика на эскейп
   addDocumentFKeydownHandlerForUploadPopup();
-}
+};
 
-//подстановка пользовательского фото для загрузки
-function choseUsersPhoto() {
-  const file = uploadButton.files[0];
-  const fileName = file.name.toLowerCase();
-
-  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
-
-  if (matches) {
-    photoPreview.src = URL.createObjectURL(file);
-  } else {
-    showAlert(ALLERT_MESSAGE);}
-}
-
-function uploadPopupCancelButtonClickHandler() {
+const uploadPopupCancelButtonClickHandler = () => {
   closeUploadPopup();
-}
+};
 
-function closeUploadPopup() {
-  uploadPopup.classList.add('hidden');
-  document.body.classList.remove('modal-open');
+uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
-  //очистка формы
-  uploadForm.reset();
-
-  //удаление обработчика на эскейп
-  removeDocumentKeydownHandlerForUploadPopup();
-}
-
-function addDocumentFKeydownHandlerForUploadPopup() {
-  document.addEventListener('keydown', documentKeydownHandler);
-}
-
-function removeDocumentKeydownHandlerForUploadPopup() {
-  document.removeEventListener('keydown', documentKeydownHandler);
-}
+uploadPopupCancelButton.addEventListener('click', () => uploadPopupCancelButtonClickHandler());
 
 function documentKeydownHandler(evt) {
   if (isEscapeKey(evt) && !isFocused()) {
     evt.preventDefault();
     closeUploadPopup();
   }
-}
-
-function isFocused () {
-  return document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
 }
 
 //изменение масштаба фото
@@ -107,42 +105,41 @@ const pristine = new Pristine(uploadForm, {
 //сброс ошибок валидации
 uploadForm.addEventListener('reset', () => pristine.reset());
 
-function createHashtagsArray(value) {
-  return value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
-}
+const createHashtagsArray = (value) => value.toLowerCase().split(' ').filter((hashtag) => hashtag.length > 0);
 
-function validateHashtagsNumber(value) {
-  return createHashtagsArray(value).length <= HASHTAGS_MAX;
-}
+const validateHashtagsNumber = (value) => createHashtagsArray(value).length <= HASHTAGS_MAX;
 
 pristine.addValidator(hashtagsFild, validateHashtagsNumber, errorMessage.BAD_COUNT);
 
-function validateHashtagsLength(value) {
-  return value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
-}
+const validateHashtagsLength = (value) => value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
 
 pristine.addValidator(hashtagsFild, validateHashtagsLength, errorMessage.BAD_LENGTH);
 
-function validateHashtagsUnique(value) {
-  return createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
-}
+const validateHashtagsUnique = (value) => createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
 
 pristine.addValidator(hashtagsFild, validateHashtagsUnique, errorMessage.BAD_REPEAT);
 
-function validateFirstSymbol(value) {
-  return createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
-}
+const validateFirstSymbol = (value) => createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
 
 pristine.addValidator(hashtagsFild, validateFirstSymbol, errorMessage.BAD_START);
 
-function validateAllSymbols (value) {
-  return createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
-}
+const validateAllSymbols = (value) => createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
 
 pristine.addValidator(hashtagsFild, validateAllSymbols, errorMessage.BAD_VALUE);
 
+//блокировка клавиши опубликовать на время обращения к серверу
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Публикация...';
+};
+
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+};
+
 //загрузка фото после валидации
-function downloadPhoto (onSuccess) {
+const downloadPhoto = (onSuccess) => {
   uploadForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -162,17 +159,6 @@ function downloadPhoto (onSuccess) {
       );
     }
   });
-}
-
-//блокировка клавиши опубликовать на время обращения к серверу
-function blockSubmitButton() {
-  submitButton.disabled = true;
-  submitButton.textContent = 'Публикация...';
-}
-
-function unblockSubmitButton() {
-  submitButton.disabled = false;
-  submitButton.textContent = 'Опубликовать';
-}
+};
 
 export { downloadPhoto, closeUploadPopup, addDocumentFKeydownHandlerForUploadPopup, removeDocumentKeydownHandlerForUploadPopup };
