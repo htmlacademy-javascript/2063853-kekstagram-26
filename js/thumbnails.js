@@ -35,13 +35,15 @@ const showUsersPhotosThumbnails = (thumbnails) => {
   thumbnails.forEach((thumbnail) => createThumbnailsFragment(thumbnail, thumbnailsListFragment));
   thumbnailsList.appendChild(thumbnailsListFragment);
 
-  //показ блока с фильтрами после загрузки всех миниатюр
-  filtersContainer.classList.remove('img-filters--inactive');
-};
+  if (filtersContainer.classList.contains('img-filters--inactive')) {
+    //показ блока с фильтрами после загрузки всех миниатюр
+    filtersContainer.classList.remove('img-filters--inactive');
 
-//добавить обработчики на кнопки фильтров
-defaultFilterButton.addEventListener('click', debounce(defaultFilterClickHandler));
-discussedFilterButton.addEventListener('click', debounce(discussedFilterButtonClickHandler));
-randomFilterButton.addEventListener('click', debounce(randomFilterButtonClickHandler));
+    //добавить обработчики на кнопки фильтров
+    defaultFilterButton.addEventListener('click', debounce(defaultFilterClickHandler));
+    discussedFilterButton.addEventListener('click', debounce(discussedFilterButtonClickHandler));
+    randomFilterButton.addEventListener('click', debounce(randomFilterButtonClickHandler));
+  }
+};
 
 export {showUsersPhotosThumbnails};
