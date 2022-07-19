@@ -65,11 +65,7 @@ const applyEffectToPhotoPreview = (effectValue) => {
     imagePreview.classList.add(effectClassName);
   }
 
-  if (currentEffect === effectNone) {
-    imagePreview.style.filter = '';
-  } else {
-    imagePreview.style.filter = `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
-  }
+  imagePreview.style.filter = (currentEffect === effectNone) ? '' : `${currentEffect.cssStyle}(${effectValue}${currentEffect.cssUnit})`;
 };
 
 //запись значение на слайдере в скрытое поле для отправки на сервер + изменение насыщеннности эф-та
