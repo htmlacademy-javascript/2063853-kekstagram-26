@@ -3,7 +3,7 @@ const imagePreview = document.querySelector('.img-upload__preview img');
 const SCALE_INCREMENT = 25;
 const SCALE_MAX = 100;
 const SCALE_START = 100;
-const SCALE_MIN = 0;
+const SCALE_MIN = 25;
 let currentScaleValue = 100;
 
 //изначальные настройки
