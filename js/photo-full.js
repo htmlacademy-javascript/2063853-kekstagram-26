@@ -62,8 +62,8 @@ const createPhotoFull = ({url, like, comments, description}) => {
     commentsLoaderButton.classList.add ('hidden');
   }
 
-  //добавляем обработчик на кнопку подгрузки комментариев
-  commentsLoaderButton.addEventListener('click', () => {
+  //создаем обработчик для кнопки подгрузки комментариев
+  const commentsLoaderButtonClickHandler = () => {
     for (let i = shownCommentsNum; i < Math.min(shownCommentsNum + COMMENTS_INCREMENT, comments.length); i++) {
       commentsList.appendChild(createUsersComment(comments[i]));
     }
@@ -72,8 +72,12 @@ const createPhotoFull = ({url, like, comments, description}) => {
 
     if (shownCommentsNum === comments.length) {
       commentsLoaderButton.classList.add ('hidden');
+
+      commentsLoaderButton.removeEventListener('click', commentsLoaderButtonClickHandler);//удаление слушателя
     }
-  });
+  };
+
+  commentsLoaderButton.addEventListener('click', commentsLoaderButtonClickHandler);
 
   //добавляем обработчик на кнопку закрытия фото
   photoFull.querySelector('.big-picture__cancel').addEventListener('click', () => closeButtonClickHandler(photoFull));
