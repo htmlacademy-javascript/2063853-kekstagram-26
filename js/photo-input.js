@@ -3,6 +3,7 @@ import { resetEffects } from './photo-effects.js';
 import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonClickHandler } from './photo-scale.js';
 import { sendData } from './api.js';
 import { showErrorMessage } from './messages.js';
+import { effectButtonChangeHandler } from './photo-effects.js';
 
 const HASHTAG_MIN = 2;
 const HASHTAG_MAX = 20;
@@ -20,6 +21,7 @@ const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
 const submitButton = document.querySelector('#upload-submit');
 const photoPreview = document.querySelector('.img-upload__preview img');
+const effectButtonsList = document.querySelector('.effects__list');
 
 const errorMessage = {
   BAD_COUNT: 'Нельзя указать больше пяти хэш-тегов',
@@ -47,6 +49,9 @@ const closeUploadPopup = () => {
   //очистка формы
   uploadForm.reset();
 
+  //удаление обработчика на кнопках эффектов
+  effectButtonsList.removeEventListener('change', effectButtonChangeHandler);
+
   //удаление обработчика на эскейп
   removeDocumentKeydownHandlerForUploadPopup();
 };
@@ -63,11 +68,15 @@ const choseUsersPhoto = () => {
   } else {
     showAlert(ALLERT_MESSAGE);}
 };
+
 const uploadButtonClickHandler = () => {
   uploadPopup.classList.remove ('hidden');
   document.body.classList.add('modal-open');
 
   choseUsersPhoto();
+
+  //добавление обработчика на кнопки эффектов при помощи всплытия
+  effectButtonsList.addEventListener('change', effectButtonChangeHandler);
 
   //установка масштаба и стиля фото по - умолчанию
   initializeCurrentScaleValue();

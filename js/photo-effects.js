@@ -13,7 +13,6 @@ let currentEffect = effect.none;
 //слайдер
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectLevelValue = document.querySelector('.effect-level__value');
-const effectButtonsList = document.querySelector('.effects__list');
 
 //функция - создатель объекта для каждого эффекта
 function buildEffect(name, min, max, step, cssStyle, cssUnit) {
@@ -86,13 +85,10 @@ const effectButtonChangeHandler = (event) => {
   applyEffectToPhotoPreview(currentEffect.max);
 };
 
-//применение эффекта при клике на кнопку эффекта
-effectButtonsList.addEventListener('change', effectButtonChangeHandler);
-
 const resetEffects = () => {
   updateSlider(effectNone);
   imagePreview.className = '';
   imagePreview.style.filter = '';
 };
 
-export { resetEffects };
+export { resetEffects, effectButtonChangeHandler };
