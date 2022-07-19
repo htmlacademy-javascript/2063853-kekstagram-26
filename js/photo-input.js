@@ -4,6 +4,12 @@ import { initializeCurrentScaleValue, biggerButtonClickHandler, smallerButtonCli
 import { sendData } from './api.js';
 import { showErrorMessage } from './messages.js';
 
+const HASHTAG_MIN = 2;
+const HASHTAG_MAX = 20;
+const HASHTAGS_MAX = 5;
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const ALLERT_MESSAGE = 'Выберите файл с расширением jpg, jpeg или png';
+
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
 const uploadPopupCancelButton = document.querySelector('.img-upload__cancel');
@@ -14,10 +20,14 @@ const smallerButton = document.querySelector('.scale__control--smaller');
 const biggerButton = document.querySelector('.scale__control--bigger');
 const submitButton = document.querySelector('#upload-submit');
 const photoPreview = document.querySelector('.img-upload__preview img');
-const HASHTAG_MIN = 2;
-const HASHTAG_MAX = 20;
-const HASHTAGS_MAX = 5;
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+
+const errorMessage = {
+  BAD_COUNT: 'Нельзя указать больше пяти хэш-тегов',
+  BAD_LENGTH: 'Длина одного хэш-тега от 2 до 20 символов, включая решётку',
+  BAD_REPEAT: 'Один и тот же хэш-тег не может быть использован дважды',
+  BAD_VALUE: 'Хэш-тег состоит из букв и чисел',
+  BAD_START: 'Хэш-тег начинается с символа # (решётка)'
+};
 
 uploadButton.addEventListener('change', () => uploadButtonClickHandler());
 
@@ -47,7 +57,7 @@ function choseUsersPhoto() {
   if (matches) {
     photoPreview.src = URL.createObjectURL(file);
   } else {
-    showAlert('Выберите файл с расширением jpg, jpeg или png');}
+    showAlert(ALLERT_MESSAGE);}
 }
 
 function uploadPopupCancelButtonClickHandler() {
@@ -105,31 +115,31 @@ function validateHashtagsNumber(value) {
   return createHashtagsArray(value).length <= HASHTAGS_MAX;
 }
 
-pristine.addValidator(hashtagsFild, validateHashtagsNumber, 'Нельзя указать больше пяти хэш-тегов');
+pristine.addValidator(hashtagsFild, validateHashtagsNumber, errorMessage.BAD_COUNT);
 
 function validateHashtagsLength(value) {
   return value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
 }
 
-pristine.addValidator(hashtagsFild, validateHashtagsLength, 'Длина одного хэш-тега от 2 до 20 символов, включая решётку');
+pristine.addValidator(hashtagsFild, validateHashtagsLength, errorMessage.BAD_LENGTH);
 
 function validateHashtagsUnique(value) {
   return createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
 }
 
-pristine.addValidator(hashtagsFild, validateHashtagsUnique, 'Один и тот же хэш-тег не может быть использован дважды');
+pristine.addValidator(hashtagsFild, validateHashtagsUnique, errorMessage.BAD_REPEAT);
 
 function validateFirstSymbol(value) {
   return createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
 }
 
-pristine.addValidator(hashtagsFild, validateFirstSymbol, 'Хэш-тег начинается с символа # (решётка)');
+pristine.addValidator(hashtagsFild, validateFirstSymbol, errorMessage.BAD_START);
 
 function validateAllSymbols (value) {
   return createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
 }
 
-pristine.addValidator(hashtagsFild, validateAllSymbols, 'Хэш-тег состоит из букв и чисел');
+pristine.addValidator(hashtagsFild, validateAllSymbols, errorMessage.BAD_VALUE);
 
 //загрузка фото после валидации
 function downloadPhoto (onSuccess) {
