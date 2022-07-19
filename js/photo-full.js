@@ -32,6 +32,7 @@ function createPhotoFull ({url, like, comments, description}) {
   const commentsList = photoFull.querySelector('.social__comments');
   const commentsLoaderButton = photoFull.querySelector('.social__comments-loader');
   let shownCommentsNum = Math.min(COMMENTS_INCREMENT, comments.length);
+  photoFull.querySelector('.comments-count-shown').textContent = shownCommentsNum;//записать изначальное количество показанных комментов в счетчик
 
   commentsList.innerHTML = '';//удалить комментарии, которые уже были в разметке
 
