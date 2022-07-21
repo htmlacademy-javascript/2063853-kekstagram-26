@@ -10,6 +10,13 @@ const HASHTAG_MAX = 20;
 const HASHTAGS_MAX = 5;
 const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const ALLERT_MESSAGE = 'Выберите файл с расширением jpg, jpeg или png';
+const ErrorMessage = {
+  BAD_COUNT: 'Нельзя указать больше пяти хэш-тегов',
+  BAD_LENGTH: 'Длина одного хэш-тега от 2 до 20 символов, включая решётку',
+  BAD_REPEAT: 'Один и тот же хэш-тег не может быть использован дважды',
+  BAD_VALUE: 'Хэш-тег состоит из букв и чисел',
+  BAD_START: 'Хэш-тег начинается с символа # (решётка)'
+};
 
 const uploadButton = document.querySelector('#upload-file');
 const uploadPopup = document.querySelector('.img-upload__overlay');
@@ -22,14 +29,6 @@ const biggerButton = document.querySelector('.scale__control--bigger');
 const submitButton = document.querySelector('#upload-submit');
 const photoPreview = document.querySelector('.img-upload__preview img');
 const effectButtonsList = document.querySelector('.effects__list');
-
-const errorMessage = {
-  BAD_COUNT: 'Нельзя указать больше пяти хэш-тегов',
-  BAD_LENGTH: 'Длина одного хэш-тега от 2 до 20 символов, включая решётку',
-  BAD_REPEAT: 'Один и тот же хэш-тег не может быть использован дважды',
-  BAD_VALUE: 'Хэш-тег состоит из букв и чисел',
-  BAD_START: 'Хэш-тег начинается с символа # (решётка)'
-};
 
 // в фокусе ли поле
 const isFocused = () => document.activeElement === descriptionFild || document.activeElement === hashtagsFild;
@@ -118,23 +117,23 @@ const createHashtagsArray = (value) => value.toLowerCase().split(' ').filter((ha
 
 const validateHashtagsNumber = (value) => createHashtagsArray(value).length <= HASHTAGS_MAX;
 
-pristine.addValidator(hashtagsFild, validateHashtagsNumber, errorMessage.BAD_COUNT);
+pristine.addValidator(hashtagsFild, validateHashtagsNumber, ErrorMessage.BAD_COUNT);
 
 const validateHashtagsLength = (value) => value.trim().length === 0 || createHashtagsArray(value).every((hashtag) => hashtag.length >= HASHTAG_MIN && hashtag.length <= HASHTAG_MAX);
 
-pristine.addValidator(hashtagsFild, validateHashtagsLength, errorMessage.BAD_LENGTH);
+pristine.addValidator(hashtagsFild, validateHashtagsLength, ErrorMessage.BAD_LENGTH);
 
 const validateHashtagsUnique = (value) => createHashtagsArray(value).sort().every((hashtag, index, sortedHashtags) => index === 0 || hashtag !== sortedHashtags[index - 1]);
 
-pristine.addValidator(hashtagsFild, validateHashtagsUnique, errorMessage.BAD_REPEAT);
+pristine.addValidator(hashtagsFild, validateHashtagsUnique, ErrorMessage.BAD_REPEAT);
 
 const validateFirstSymbol = (value) => createHashtagsArray(value).every((hashtag) => hashtag.startsWith('#'));
 
-pristine.addValidator(hashtagsFild, validateFirstSymbol, errorMessage.BAD_START);
+pristine.addValidator(hashtagsFild, validateFirstSymbol, ErrorMessage.BAD_START);
 
 const validateAllSymbols = (value) => createHashtagsArray(value).every((hashtag) => /^#?[а-яА-ЯёЁa-zA-Z0-9]+$/.test(hashtag));
 
-pristine.addValidator(hashtagsFild, validateAllSymbols, errorMessage.BAD_VALUE);
+pristine.addValidator(hashtagsFild, validateAllSymbols, ErrorMessage.BAD_VALUE);
 
 //блокировка клавиши опубликовать на время обращения к серверу
 const blockSubmitButton = () => {
