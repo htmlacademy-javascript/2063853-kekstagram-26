@@ -1,4 +1,19 @@
 const imagePreview = document.querySelector('.img-upload__preview img');
+//слайдер
+const sliderElement = document.querySelector('.effect-level__slider');
+const effectLevelValue = document.querySelector('.effect-level__value');
+const sliderElementContainer = document.querySelector('.img-upload__effect-level');
+
+//функция - создатель объекта для каждого эффекта
+const buildEffect = (name, min, max, step, cssStyle, cssUnit) => ({
+  name: name,
+  min: min,
+  max: max,
+  step: step,
+  cssStyle: cssStyle,
+  cssUnit: cssUnit
+});
+
 //эффекты
 const effect = {
   none: buildEffect('none', 0, 0, 0, '', ''),
@@ -10,23 +25,6 @@ const effect = {
 };
 const effectNone = effect.none;
 let currentEffect = effect.none;
-//слайдер
-const sliderElement = document.querySelector('.effect-level__slider');
-const effectLevelValue = document.querySelector('.effect-level__value');
-const sliderElementContainer = document.querySelector('.img-upload__effect-level');
-
-
-//функция - создатель объекта для каждого эффекта
-function buildEffect(name, min, max, step, cssStyle, cssUnit) {
-  return {
-    name: name,
-    min: min,
-    max: max,
-    step: step,
-    cssStyle: cssStyle,
-    cssUnit: cssUnit
-  };
-}
 
 //создание слайдера
 noUiSlider.create(sliderElement, {
